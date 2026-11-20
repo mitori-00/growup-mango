@@ -4,8 +4,10 @@ window.MangoGame = window.MangoGame || {};
     let state = ns.StorageService.loadState();
     let isHome = true;
     let activeShopTab = 'snack';
+    let renderedCharId = null;
 
     // DOM 요소
+    const deviceTitle = document.getElementById('device-title');
     const homeScreen = document.getElementById('home-screen');
     const gameScreen = document.getElementById('game-screen');
     const themeDecor = document.getElementById('theme-decor');
@@ -31,6 +33,8 @@ window.MangoGame = window.MangoGame || {};
     const foodList = document.getElementById('food-list');
     const shopModal = document.getElementById('shop-modal');
     const shopList = document.getElementById('shop-list');
+    const charModal = document.getElementById('char-modal');
+    const charList = document.getElementById('char-list');
     const dexModal = document.getElementById('dex-modal');
     const dexList = document.getElementById('dex-list');
     const dexCountDisplay = document.getElementById('dex-count-display');
@@ -51,6 +55,15 @@ window.MangoGame = window.MangoGame || {};
         } else {
             ns.StorageService.saveState(state);
         }
+    }
+
+    function getCurrentCharacter() {
+        return ns.CHARACTERS.find((c) => c.id === state.character) || ns.CHARACTERS[0];
+    }
+
+    function getFormDisplayName(formMeta) {
+        const char = getCurrentCharacter();
+        return `${formMeta.namePrefix} ${char.name}`;
     }
 
     function showBubble(text) {
@@ -129,12 +142,24 @@ window.MangoGame = window.MangoGame || {};
         }
 
         if (evolvedForm) {
-            showBubble(`진화! ${evolvedForm.name}`);
+            showBubble(`진화! ${getFormDisplayName(evolvedForm)}`);
             if (ns.Sound) ns.Sound.playEvolution();
             save(true);
         } else {
             showBubble('LEVEL UP!');
             if (ns.Sound) ns.Sound.playLevelUp();
+        }
+    }
+
+    function syncCharacterSprites() {
+        const char = getCurrentCharacter();
+        if (renderedCharId !== char.id && ns.Sprites) {
+            ns.Sprites.render(homeMangoSvg, char.id, { withBasket: false });
+            ns.Sprites.render(gameMangoSvg, char.id, { withBasket: true });
+            renderedCharId = char.id;
+        }
+        if (deviceTitle) {
+            deviceTitle.textContent = char.title;
         }
     }
 
@@ -212,19 +237,23 @@ window.MangoGame = window.MangoGame || {};
     }
 
     function updateUI() {
+        syncCharacterSprites();
+        const char = getCurrentCharacter();
         const formId = getCurrentFormId();
         const formMeta = getFormMeta(formId);
 
-        let pixelSize = 52;
+        let baseSize = 62;
         if (state.level >= 11) {
-            pixelSize = 66;
+            baseSize = 78;
         } else if (state.level >= 6) {
-            pixelSize = 58;
+            baseSize = 70;
         }
+        const pixelSize = Math.round(baseSize * (char.sizeScale || 1));
+        const gameSize = Math.round(62 * (char.sizeScale || 1));
 
         const lvStr = String(state.level).padStart(2, '0');
         levelDisplay.textContent = `LV.${lvStr} (${formMeta.stage})`;
-        homeFormName.textContent = `${formMeta.icon} ${formMeta.name}`;
+        homeFormName.textContent = `${formMeta.icon} ${getFormDisplayName(formMeta)}`;
         coinDisplay.textContent = state.coins;
         shopCoinDisplay.textContent = state.coins;
         homeBestScore.textContent = state.highScore;
@@ -235,6 +264,8 @@ window.MangoGame = window.MangoGame || {};
 
         homeMangoSvg.style.width = `${pixelSize}px`;
         homeMangoSvg.style.height = `${pixelSize}px`;
+        gameMangoSvg.style.width = `${gameSize}px`;
+        gameMangoSvg.style.height = `${gameSize}px`;
 
         homeScreen.classList.toggle('sleeping', state.isSleeping);
         zzzIcon.style.display = state.isSleeping ? 'block' : 'none';
@@ -248,8 +279,58 @@ window.MangoGame = window.MangoGame || {};
     function closeAllModals() {
         foodModal.style.display = 'none';
         shopModal.style.display = 'none';
+        charModal.style.display = 'none';
         dexModal.style.display = 'none';
         rankModal.style.display = 'none';
+    }
+
+    // 캐릭터 선택 모달 (망고 / 토리)
+    function openCharModal() {
+        closeAllModals();
+        renderCharList();
+        charModal.style.display = 'flex';
+    }
+
+    function renderCharList() {
+        charList.innerHTML = '';
+        ns.CHARACTERS.forEach((char) => {
+            const isSelected = state.character === char.id;
+            const card = document.createElement('div');
+            card.className = `char-card ${isSelected ? 'selected' : ''}`.trim();
+
+            const previewBox = document.createElement('div');
+            previewBox.className = 'char-preview-box';
+            if (ns.Sprites) {
+                previewBox.appendChild(ns.Sprites.createPreviewSvg(char.id));
+            }
+
+            const info = document.createElement('div');
+            info.className = 'item-info';
+            info.style.flex = '1';
+            info.innerHTML = `
+                <div class="item-name">${char.name} (${char.breed})</div>
+                <div class="item-desc">${char.desc}</div>
+            `;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = isSelected ? 'item-btn equipped' : 'item-btn';
+            btn.textContent = isSelected ? '선택중' : '선택';
+            btn.disabled = isSelected;
+            btn.addEventListener('click', () => {
+                if (ns.Sound) ns.Sound.playLevelUp();
+                state.character = char.id;
+                closeAllModals();
+                showBubble(`${char.name} 안녕! 🐾`);
+                updateUI();
+                save(true);
+            });
+
+            card.appendChild(previewBox);
+            card.appendChild(info);
+            card.appendChild(btn);
+            charList.appendChild(card);
+        });
     }
 
     // 간식/밥 선택 모달
@@ -338,7 +419,7 @@ window.MangoGame = window.MangoGame || {};
             unequipCard.innerHTML = `
                 <div class="item-info">
                     <div class="item-name">✨ 액세서리 벗기</div>
-                    <div class="item-desc">기본 망고 모습으로 돌아갑니다</div>
+                    <div class="item-desc">기본 모습으로 돌아갑니다</div>
                 </div>
                 <button type="button" class="item-btn">해제</button>
             `;
@@ -443,8 +524,8 @@ window.MangoGame = window.MangoGame || {};
 
         const { feed, play, sleep } = state.careStats;
         const predicted = getFormMeta(determineAdultForm());
-        const forecastText = state.level < 11 ? ` · 예상 진화: ${predicted.name}` : ' · 성체 진화 완료';
-        dexCareSummary.textContent = `케어 비율 — 밥 ${feed} · 놀이 ${play} · 수면 ${sleep}${forecastText}`;
+        const forecastText = state.level < 11 ? ` · 예상: ${getFormDisplayName(predicted)}` : ' · 성체 진화 완료';
+        dexCareSummary.textContent = `케어 — 밥 ${feed} · 놀이 ${play} · 수면 ${sleep}${forecastText}`;
 
         dexList.innerHTML = '';
         ns.EVOLUTION_FORMS.forEach((form) => {
@@ -455,7 +536,7 @@ window.MangoGame = window.MangoGame || {};
             card.innerHTML = `
                 <div class="item-info">
                     <div class="item-name">
-                        ${unlocked ? `${form.icon} ${form.name}` : '🔒 ???'}
+                        ${unlocked ? `${form.icon} ${getFormDisplayName(form)}` : '🔒 ???'}
                         ${isCurrent ? '<span class="dex-now-tag">현재</span>' : ''}
                     </div>
                     <div class="item-desc">${unlocked ? form.desc : `조건: ${form.condition}`}</div>
@@ -468,6 +549,7 @@ window.MangoGame = window.MangoGame || {};
     }
 
     function rebirthMango() {
+        const char = getCurrentCharacter();
         state.level = 1;
         state.exp = 0;
         state.hunger = 70;
@@ -477,7 +559,7 @@ window.MangoGame = window.MangoGame || {};
         state.adultForm = null;
         state.careStats = { feed: 0, play: 0, sleep: 0 };
         closeAllModals();
-        showBubble('새 망고 탄생! 🥚');
+        showBubble(`새 ${char.name} 탄생! 🥚`);
         if (ns.Sound) ns.Sound.playLevelUp();
         updateUI();
         save(true);
@@ -611,7 +693,7 @@ window.MangoGame = window.MangoGame || {};
         }
     }
 
-    // 홈 화면 망고 산책 모션
+    // 홈 화면 산책 모션
     let mangoX = 110;
     let mangoDir = 1;
     setInterval(() => {
@@ -674,11 +756,13 @@ window.MangoGame = window.MangoGame || {};
     document.getElementById('btn-sleep').addEventListener('click', withClickSound(toggleSleep));
     document.getElementById('btn-outside').addEventListener('click', withClickSound(toggleScreen));
 
+    document.getElementById('char-btn').addEventListener('click', withClickSound(openCharModal));
     document.getElementById('dex-btn').addEventListener('click', withClickSound(openDexModal));
     document.getElementById('rank-btn').addEventListener('click', withClickSound(openRankModal));
     document.getElementById('coin-shop-btn').addEventListener('click', withClickSound(openShopModal));
     document.getElementById('close-food-btn').addEventListener('click', withClickSound(() => { foodModal.style.display = 'none'; }));
     document.getElementById('close-shop-btn').addEventListener('click', withClickSound(() => { shopModal.style.display = 'none'; }));
+    document.getElementById('close-char-btn').addEventListener('click', withClickSound(() => { charModal.style.display = 'none'; }));
     document.getElementById('close-dex-btn').addEventListener('click', withClickSound(() => { dexModal.style.display = 'none'; }));
     document.getElementById('close-rank-btn').addEventListener('click', withClickSound(() => { rankModal.style.display = 'none'; }));
     document.getElementById('rebirth-btn').addEventListener('click', withClickSound(rebirthMango));

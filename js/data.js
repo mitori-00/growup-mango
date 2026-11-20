@@ -1,6 +1,26 @@
 window.MangoGame = window.MangoGame || {};
 
+window.MangoGame.CHARACTERS = [
+    {
+        id: 'mango',
+        name: '망고',
+        title: 'GROW UP MANGO',
+        breed: '포메라니안',
+        desc: '노릇한 귀·등과 풍성한 하얀 목털의 해맑은 포메',
+        sizeScale: 1.0
+    },
+    {
+        id: 'tori',
+        name: '토리',
+        title: 'GROW UP TORI',
+        breed: '2kg 말티즈',
+        desc: '작고 복슬복슬한 순한 눈망울의 하얀 말티즈',
+        sizeScale: 0.88
+    }
+];
+
 window.MangoGame.DEFAULT_STATE = {
+    character: 'mango',
     level: 1,
     exp: 0,
     hunger: 70,
@@ -28,15 +48,15 @@ window.MangoGame.EVOLUTION_FORMS = [
     {
         id: 'baby',
         stage: 'BABY',
-        name: '아기 망고',
+        namePrefix: '아기',
         icon: '🐶',
         condition: 'Lv.01 기본 형태',
-        desc: '호기심 많은 아기 강아지 망고예요.'
+        desc: '호기심 많은 아기 강아지 시절이에요.'
     },
     {
         id: 'teen',
         stage: 'TEEN',
-        name: '청소년 망고',
+        namePrefix: '청소년',
         icon: '🐕',
         condition: 'Lv.06 도달',
         desc: '부쩍 자라서 산책과 놀이를 좋아해요.'
@@ -44,34 +64,34 @@ window.MangoGame.EVOLUTION_FORMS = [
     {
         id: 'adult_foodie',
         stage: 'ADULT',
-        name: '먹보 망고',
+        namePrefix: '먹보',
         icon: '🍖',
         condition: 'Lv.11 달성 시 밥 비율 1위',
-        desc: '맛있는 간식을 제일 좋아하는 빨간 턱받이 망고!'
+        desc: '맛있는 간식을 제일 좋아하는 빨간 턱받이 스타일!'
     },
     {
         id: 'adult_sporty',
         stage: 'ADULT',
-        name: '에너자이저 망고',
+        namePrefix: '에너자이저',
         icon: '⚽',
         condition: 'Lv.11 달성 시 놀이 비율 1위',
-        desc: '스포츠 머리띠를 두른 체력왕 망고!'
+        desc: '스포츠 머리띠를 두른 체력왕 스타일!'
     },
     {
         id: 'adult_sleepy',
         stage: 'ADULT',
-        name: '잠꾸러기 망고',
+        namePrefix: '잠꾸러기',
         icon: '💤',
         condition: 'Lv.11 달성 시 수면 비율 1위',
-        desc: '수면 모자를 쓰고 늘 포근하게 졸고 있는 망고!'
+        desc: '수면 모자를 쓰고 늘 포근하게 졸고 있는 스타일!'
     },
     {
         id: 'adult_balanced',
         stage: 'ADULT',
-        name: '황금 밸런스 망고',
+        namePrefix: '황금 밸런스',
         icon: '✨',
         condition: 'Lv.11 달성 시 밥·놀이·수면 균형',
-        desc: '고르게 사랑받아 황금빛으로 빛나는 희귀 망고!'
+        desc: '고르게 사랑받아 황금빛으로 빛나는 희귀 형태!'
     }
 ];
 

@@ -562,6 +562,39 @@ html, body {
 
 .rank-card.me { background: #fff3c4; }
 
+/* 캐릭터 선택 카드 */
+.char-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fafafa;
+    border: 2px solid #333;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.char-card.selected {
+    background: #fff3c4;
+}
+
+.char-preview-box {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    background: #a8d8ea;
+    border: 2px solid #333;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.char-preview-svg {
+    width: 48px;
+    height: 48px;
+    image-rendering: pixelated;
+}
+
 /* 미니게임 결과 모달 */
 .game-result-modal {
     inset: 24px 12px;

@@ -20,6 +20,7 @@ window.MangoGame = window.MangoGame || {};
         return {
             ...base,
             ...parsed,
+            character: parsed.character === 'tori' ? 'tori' : 'mango',
             nickname: parsed.nickname || '망고집사',
             careStats: { ...base.careStats, ...(parsed.careStats || {}) },
             unlockedDex: unlocked,
@@ -41,7 +42,12 @@ window.MangoGame = window.MangoGame || {};
             is_sleeping: Boolean(state.isSleeping),
             equipped_accessory: state.equippedAccessory || null,
             equipped_theme: state.equippedTheme || 'theme-default',
-            care_stats: state.careStats || { feed: 0, play: 0, sleep: 0 },
+            care_stats: {
+                feed: (state.careStats && state.careStats.feed) || 0,
+                play: (state.careStats && state.careStats.play) || 0,
+                sleep: (state.careStats && state.careStats.sleep) || 0,
+                character: state.character || 'mango'
+            },
             adult_form: state.adultForm || null,
             unlocked_dex: state.unlockedDex || ['baby'],
             inventory: state.inventory || {},
@@ -51,7 +57,9 @@ window.MangoGame = window.MangoGame || {};
     }
 
     function fromDbRow(row) {
+        const cs = row.care_stats || {};
         return normalizeState({
+            character: cs.character || 'mango',
             nickname: row.nickname,
             level: row.level,
             exp: row.exp,
@@ -63,7 +71,7 @@ window.MangoGame = window.MangoGame || {};
             isSleeping: row.is_sleeping,
             equippedAccessory: row.equipped_accessory,
             equippedTheme: row.equipped_theme,
-            careStats: row.care_stats,
+            careStats: { feed: cs.feed || 0, play: cs.play || 0, sleep: cs.sleep || 0 },
             adultForm: row.adult_form,
             unlockedDex: row.unlocked_dex,
             inventory: row.inventory,
