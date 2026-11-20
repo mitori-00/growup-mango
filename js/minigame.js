@@ -345,5 +345,396 @@ window.MangoGame = window.MangoGame || {};
         }
     }
 
+    class JumpRunMinigame {
+        constructor(options) {
+            this.screenEl = options.screenEl;
+            this.mangoEl = options.mangoEl;
+            this.scoreEl = options.scoreEl;
+            this.timeEl = options.timeEl;
+            this.heartsEl = options.heartsEl;
+            this.comboEl = options.comboEl;
+            this.guideEl = options.guideEl;
+            this.resultEl = options.resultEl;
+            this.resultTitleEl = options.resultTitleEl;
+            this.resultDetailsEl = options.resultDetailsEl;
+            this.getCharacterId = options.getCharacterId || (() => 'mango');
+            this.onStatGain = options.onStatGain;
+            this.onComplete = options.onComplete;
+
+            this.running = false;
+            this.paused = false;
+            this.score = 0;
+            this.bonusCoins = 0;
+            this.timeLeft = ns.MINIGAME_CONFIG.durationSeconds;
+            this.hearts = ns.MINIGAME_CONFIG.maxHearts;
+            this.combo = 0;
+            this.invincibleUntil = 0;
+
+            this.playerY = 0;
+            this.velY = 0;
+            this.jumpsLeft = 2;
+            this.entities = [];
+            this.loopId = null;
+            this.spawnTimer = 0;
+            this.distAccum = 0;
+        }
+
+        getCharacterItems() {
+            const charId = this.getCharacterId();
+            const table = ns.MINIGAME_ITEMS || {};
+            return table[charId] || table.mango;
+        }
+
+        reset() {
+            this.stopLoop();
+            this.running = false;
+            this.paused = false;
+            this.score = 0;
+            this.bonusCoins = 0;
+            this.timeLeft = ns.MINIGAME_CONFIG.durationSeconds;
+            this.hearts = ns.MINIGAME_CONFIG.maxHearts;
+            this.combo = 0;
+            this.invincibleUntil = 0;
+            this.playerY = 0;
+            this.velY = 0;
+            this.jumpsLeft = 2;
+            this.spawnTimer = 0;
+            this.distAccum = 0;
+
+            this.screenEl.classList.remove('fever');
+            this.mangoEl.classList.remove('invincible');
+            this.mangoEl.style.bottom = '24px';
+            this.resultEl.style.display = 'none';
+
+            const items = this.getCharacterItems();
+            this.guideEl.innerHTML = `
+                JUMP RUN! (2단 점프)<br>
+                ${items.tier1.emoji} +${items.tier1.points} · ${items.tier2.emoji} +${items.tier2.points} · ${items.tier3.emoji} +${items.tier3.points}<br>
+                울타리를 뛰어넘으세요!<br><br>
+                TAP [JUMP] OR [PLAY / STOP]<br>TO START
+            `;
+            this.guideEl.style.display = 'block';
+            this.renderHud();
+        }
+
+        toggle() {
+            if (this.resultEl.style.display === 'flex') return;
+            if (this.running) {
+                this.pause();
+            } else {
+                this.start();
+            }
+        }
+
+        pause() {
+            this.running = false;
+            this.paused = true;
+            if (this.loopId) cancelAnimationFrame(this.loopId);
+            this.loopId = null;
+            this.guideEl.innerHTML = `PAUSED<br>SCORE: ${this.score}<br>TIME: ${Math.ceil(this.timeLeft)}s<br><br>PRESS [PLAY / STOP]`;
+            this.guideEl.style.display = 'block';
+        }
+
+        start() {
+            if (!this.paused) {
+                this.clearEntities();
+            }
+            this.running = true;
+            this.paused = false;
+            this.guideEl.style.display = 'none';
+            this.resultEl.style.display = 'none';
+
+            let lastTime = performance.now();
+            const tick = (now) => {
+                if (!this.running) return;
+                const dt = Math.min(0.05, (now - lastTime) / 1000);
+                lastTime = now;
+                this.update(dt, now);
+                if (this.running) {
+                    this.loopId = requestAnimationFrame(tick);
+                }
+            };
+            this.loopId = requestAnimationFrame(tick);
+        }
+
+        jump() {
+            if (this.resultEl.style.display === 'flex') return;
+            if (!this.running && !this.paused) {
+                this.start();
+            }
+            if (!this.running || this.jumpsLeft <= 0) return;
+
+            this.velY = this.jumpsLeft === 2 ? 430 : 380;
+            this.jumpsLeft -= 1;
+            if (ns.Sound) ns.Sound.playClick();
+        }
+
+        stopLoop() {
+            this.running = false;
+            this.paused = false;
+            if (this.loopId) cancelAnimationFrame(this.loopId);
+            this.loopId = null;
+            this.clearEntities();
+            this.screenEl.classList.remove('fever');
+            this.mangoEl.classList.remove('invincible');
+        }
+
+        clearEntities() {
+            this.entities.forEach((ent) => ent.el.remove());
+            this.entities = [];
+        }
+
+        getPhase() {
+            const elapsed = ns.MINIGAME_CONFIG.durationSeconds - this.timeLeft;
+            if (elapsed >= 40) {
+                return { name: 'FEVER', speed: 220, spawnInterval: 0.95, scoreMult: 1.5, isFever: true };
+            }
+            if (elapsed >= 20) {
+                return { name: 'FAST', speed: 185, spawnInterval: 1.15, scoreMult: 1.0, isFever: false };
+            }
+            return { name: 'NORMAL', speed: 150, spawnInterval: 1.35, scoreMult: 1.0, isFever: false };
+        }
+
+        getComboMultiplier() {
+            if (this.combo >= 12) return 2.0;
+            if (this.combo >= 8) return 1.5;
+            if (this.combo >= 4) return 1.2;
+            return 1.0;
+        }
+
+        update(dt, now) {
+            this.timeLeft = Math.max(0, this.timeLeft - dt);
+            if (this.timeLeft <= 0) {
+                this.finish('TIME UP!');
+                return;
+            }
+
+            const phase = this.getPhase();
+            this.screenEl.classList.toggle('fever', phase.isFever);
+
+            if (now >= this.invincibleUntil) {
+                this.mangoEl.classList.remove('invincible');
+            }
+
+            this.distAccum += dt;
+            if (this.distAccum >= 0.25) {
+                this.distAccum -= 0.25;
+                this.score += 1;
+            }
+
+            const gravity = 1320;
+            this.velY -= gravity * dt;
+            this.playerY += this.velY * dt;
+            if (this.playerY <= 0) {
+                this.playerY = 0;
+                this.velY = 0;
+                this.jumpsLeft = 2;
+            }
+            this.mangoEl.style.bottom = `${24 + Math.round(this.playerY)}px`;
+
+            this.spawnTimer += dt;
+            if (this.spawnTimer >= phase.spawnInterval) {
+                this.spawnTimer = 0;
+                this.spawnWave(phase);
+            }
+
+            const px0 = 48;
+            const px1 = 84;
+            const py0 = this.playerY;
+            const py1 = this.playerY + 42;
+
+            for (let i = this.entities.length - 1; i >= 0; i--) {
+                const ent = this.entities[i];
+                ent.x -= phase.speed * dt;
+                ent.el.style.left = `${ent.x}px`;
+
+                const ex0 = ent.x + 2;
+                const ex1 = ent.x + 20;
+                const ey0 = ent.y;
+                const ey1 = ent.y + 20;
+
+                if (ex1 >= px0 && ex0 <= px1 && ey1 >= py0 && ey0 <= py1) {
+                    this.handleCollide(ent, phase, now);
+                    ent.el.remove();
+                    this.entities.splice(i, 1);
+                    if (!this.running) return;
+                    continue;
+                }
+
+                if (ent.x < -30) {
+                    ent.el.remove();
+                    this.entities.splice(i, 1);
+                }
+            }
+
+            this.renderHud(phase);
+        }
+
+        buildFenceSvg() {
+            return `
+                <svg class="jump-fence-svg" viewBox="0 0 15 13" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="1" y="4" width="13" height="2" fill="#c68b59"/>
+                    <rect x="1" y="8" width="13" height="2" fill="#a47148"/>
+                    <rect x="1" y="3" width="13" height="1" fill="#6b5244"/>
+                    <rect x="1" y="7" width="13" height="1" fill="#6b5244"/>
+                    <rect x="2" y="2" width="3" height="10" fill="#e0b084"/>
+                    <rect x="3" y="1" width="1" height="1" fill="#e0b084"/>
+                    <rect x="6" y="2" width="3" height="10" fill="#e0b084"/>
+                    <rect x="7" y="1" width="1" height="1" fill="#e0b084"/>
+                    <rect x="10" y="2" width="3" height="10" fill="#e0b084"/>
+                    <rect x="11" y="1" width="1" height="1" fill="#e0b084"/>
+                    <rect x="1" y="2" width="1" height="10" fill="#6b5244"/>
+                    <rect x="5" y="2" width="1" height="10" fill="#6b5244"/>
+                    <rect x="9" y="2" width="1" height="10" fill="#6b5244"/>
+                    <rect x="13" y="2" width="1" height="10" fill="#6b5244"/>
+                    <rect x="2" y="12" width="11" height="1" fill="#6b5244"/>
+                </svg>
+            `;
+        }
+
+        spawnWave(phase) {
+            const screenW = this.screenEl.clientWidth || 300;
+            const charItems = this.getCharacterItems();
+            const r = Math.random();
+
+            if (r < 0.58) {
+                this.addEntity({ x: screenW + 10, y: 0, emoji: '', kind: 'obstacle', meta: null });
+
+                if (Math.random() < 0.55) {
+                    const isTop = Math.random() < 0.4;
+                    const meta = isTop ? charItems.tier1 : charItems.tier2;
+                    this.addEntity({
+                        x: screenW + 10,
+                        y: isTop ? 82 : 58,
+                        emoji: meta.emoji,
+                        kind: isTop ? 'tier1' : 'tier2',
+                        meta
+                    });
+                }
+            } else if (phase.isFever && r < 0.78) {
+                this.addEntity({ x: screenW + 10, y: 68, emoji: '🪙', kind: 'gold', meta: null });
+            } else {
+                const pick = Math.random();
+                const kind = pick < 0.3 ? 'tier1' : (pick < 0.7 ? 'tier2' : 'tier3');
+                const meta = charItems[kind];
+                const y = kind === 'tier1' ? 92 : (kind === 'tier2' ? 56 : 16);
+                this.addEntity({ x: screenW + 10, y, emoji: meta.emoji, kind, meta });
+            }
+        }
+
+        addEntity({ x, y, emoji, kind, meta }) {
+            const el = document.createElement('div');
+            el.className = kind === 'obstacle' ? 'jump-entity jump-fence' : 'jump-entity';
+            if (kind === 'obstacle') {
+                el.innerHTML = this.buildFenceSvg();
+            } else {
+                el.textContent = emoji;
+            }
+            el.style.left = `${x}px`;
+            el.style.bottom = `${24 + y}px`;
+            this.screenEl.appendChild(el);
+            this.entities.push({ el, x, y, kind, meta });
+        }
+
+        handleCollide(ent, phase, now) {
+            const floatTop = Math.max(46, this.screenEl.clientHeight - 46 - ent.y);
+            if (ent.kind === 'obstacle') {
+                if (now < this.invincibleUntil) return;
+                this.score = Math.max(0, this.score - 15);
+                this.hearts = Math.max(0, this.hearts - 1);
+                this.combo = 0;
+                this.invincibleUntil = now + ns.MINIGAME_CONFIG.invincibleMs;
+                this.mangoEl.classList.add('invincible');
+                if (ns.Sound) ns.Sound.playBomb();
+                this.spawnFloatText('-15 ❤️-1', 56, floatTop, 'bad');
+                if (this.hearts <= 0) {
+                    this.finish('GAME OVER');
+                }
+                return;
+            }
+
+            this.combo += 1;
+            const mult = phase.scoreMult * this.getComboMultiplier();
+
+            if (ent.kind === 'gold') {
+                const pts = Math.round(30 * mult);
+                this.score += pts;
+                this.bonusCoins += 5;
+                if (ns.Sound) ns.Sound.playCatchGold();
+                this.spawnFloatText(`+${pts} 🪙+5`, 56, floatTop, 'gold');
+                return;
+            }
+
+            const meta = ent.meta || this.getCharacterItems().tier3;
+            const pts = Math.round(meta.points * mult);
+            this.score += pts;
+            this.onStatGain({ happy: meta.happy, exp: meta.exp });
+            if (ns.Sound) {
+                if (ent.kind === 'tier1' || ent.kind === 'tier2') ns.Sound.playCatchBone();
+                else ns.Sound.playCatchBall();
+            }
+            this.spawnFloatText(`+${pts}`, 56, floatTop, meta.style || '');
+        }
+
+        spawnFloatText(text, x, y, styleClass) {
+            const el = document.createElement('div');
+            el.className = `float-text ${styleClass || ''}`.trim();
+            el.textContent = text;
+            el.style.left = `${x}px`;
+            el.style.top = `${y}px`;
+            this.screenEl.appendChild(el);
+            setTimeout(() => el.remove(), 650);
+        }
+
+        renderHud(phase) {
+            const currentPhase = phase || this.getPhase();
+            this.scoreEl.textContent = `SCORE ${String(this.score).padStart(4, '0')}`;
+            this.timeEl.textContent = `${Math.ceil(this.timeLeft)}s`;
+            this.heartsEl.textContent = '❤️'.repeat(this.hearts) + '🖤'.repeat(ns.MINIGAME_CONFIG.maxHearts - this.hearts);
+
+            const parts = [];
+            if (currentPhase.isFever) parts.push('🔥FEVER x1.5');
+            if (this.combo >= 4) parts.push(`${this.combo} COMBO x${this.getComboMultiplier()}`);
+            this.comboEl.textContent = parts.join(' ');
+        }
+
+        finish(reasonTitle) {
+            this.stopLoop();
+            const survivedAll = this.timeLeft <= 0 && this.hearts > 0;
+            if (ns.Sound) {
+                if (survivedAll) ns.Sound.playGameClear();
+                else ns.Sound.playGameOver();
+            }
+            const perfectClear = survivedAll && this.hearts === ns.MINIGAME_CONFIG.maxHearts;
+            const baseCoins = Math.floor(this.score / 10);
+            const clearBonus = perfectClear
+                ? ns.MINIGAME_CONFIG.perfectBonusCoins
+                : (survivedAll ? ns.MINIGAME_CONFIG.survivalBonusCoins : 0);
+
+            const summary = this.onComplete({
+                score: this.score,
+                baseCoins,
+                clearBonus,
+                goldCoins: this.bonusCoins,
+                survivedAll,
+                perfectClear
+            });
+
+            this.resultTitleEl.textContent = reasonTitle;
+            const badgeHtml = summary.isNewRecord ? '<div class="result-badge">🏆 NEW RECORD!</div>' : '';
+            this.resultDetailsEl.innerHTML = `
+                ${badgeHtml}
+                <div class="result-row"><span>최종 점수</span><span>${summary.score} pts</span></div>
+                <div class="result-row"><span>기본 보상</span><span>+${summary.baseCoins} 🪙</span></div>
+                <div class="result-row"><span>황금 코인</span><span>+${summary.goldCoins} 🪙</span></div>
+                <div class="result-row"><span>완주 보너스</span><span>+${summary.clearBonus} 🪙</span></div>
+                <div class="result-row"><span>신기록 보너스</span><span>+${summary.recordBonus} 🪙</span></div>
+                <div class="result-row highlight"><span>총 획득 코인</span><span>+${summary.totalCoins} 🪙</span></div>
+            `;
+            this.resultEl.style.display = 'flex';
+        }
+    }
+
     ns.CatchMinigame = CatchMinigame;
+    ns.JumpRunMinigame = JumpRunMinigame;
 })(window.MangoGame);

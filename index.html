@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Grow Up Mango &amp; Tori</title>
-    <link rel="stylesheet" href="css/style.css?v=20261121b">
+    <title>Grow Up ?</title>
+    <link rel="stylesheet" href="css/style.css?v=20261121p">
 </head>
 <body>
 
@@ -142,6 +142,30 @@
             <div class="modal-list" id="rank-list"></div>
         </div>
 
+        <!-- OUTSIDE 미니게임 선택 팝업 -->
+        <div class="screen-modal" id="outside-modal" style="display:none;">
+            <div class="modal-header">
+                <span>🌳 OUTSIDE GAMES</span>
+                <button type="button" class="modal-close" id="close-outside-btn">✕</button>
+            </div>
+            <div class="modal-list">
+                <div class="item-card">
+                    <div class="item-info">
+                        <div class="item-name">🎾 캐치 게임</div>
+                        <div class="item-desc">떨어지는 최애 간식 받기 · 좌우 이동</div>
+                    </div>
+                    <button type="button" class="item-btn" id="pick-catch-btn">플레이</button>
+                </div>
+                <div class="item-card">
+                    <div class="item-info">
+                        <div class="item-name">🏃 산책 점프 런</div>
+                        <div class="item-desc">장애물을 2단 점프로 넘고 간식 먹기</div>
+                    </div>
+                    <button type="button" class="item-btn" id="pick-jump-btn">플레이</button>
+                </div>
+            </div>
+        </div>
+
         <div class="ground"></div>
     </div>
 
@@ -183,6 +207,43 @@
         <div class="ground"></div>
     </div>
 
+    <!-- 미니게임 2: 산책 점프 런 화면 -->
+    <div id="jump-screen" class="screen theme-default">
+        <div class="theme-decor" id="jump-theme-decor" aria-hidden="true"></div>
+        <div class="game-hud">
+            <div class="hud-left">
+                <div class="score-board" id="jump-score-display">SCORE 0000</div>
+                <div class="combo-badge" id="jump-combo-badge"></div>
+            </div>
+            <div class="hud-center">
+                <div class="time-board" id="jump-time-display">60s</div>
+            </div>
+            <div class="hud-right">
+                <div class="hearts-board" id="jump-hearts-display">❤️❤️❤️</div>
+            </div>
+        </div>
+
+        <div class="game-guide" id="jump-guide">
+            JUMP RUN! (2단 점프)<br>
+            울타리를 뛰어넘으세요!<br><br>
+            TAP [JUMP] TO START
+        </div>
+
+        <div class="screen-modal game-result-modal" id="jump-result" style="display:none;">
+            <div class="result-title" id="jump-result-title">TIME UP!</div>
+            <div class="result-details" id="jump-result-details"></div>
+            <div class="result-actions">
+                <button type="button" class="mini-action-btn primary" id="jump-replay-btn">RETRY</button>
+                <button type="button" class="mini-action-btn" id="jump-home-btn">HOME</button>
+            </div>
+        </div>
+
+        <div id="jump-mango">
+            <svg id="jump-mango-svg" class="mango-pixel walking" viewBox="0 -3 24 26" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div class="ground"></div>
+    </div>
+
     <!-- 홈 버튼 -->
     <div class="buttons" id="home-buttons">
         <div class="btn btn-food" id="btn-food">
@@ -203,7 +264,7 @@
         </div>
     </div>
 
-    <!-- 미니게임 버튼 (엄지 최적화 2단 조작부) -->
+    <!-- 미니게임 1 버튼 (엄지 최적화 2단 조작부) -->
     <div class="buttons game-controls" id="game-buttons" style="display:none;">
         <div class="game-move-row">
             <div class="btn btn-food game-pad" id="btn-left">
@@ -217,15 +278,25 @@
             <div>▶ PLAY / ⏸ STOP</div>
         </div>
     </div>
+
+    <!-- 미니게임 2 버튼 (산책 점프 런) -->
+    <div class="buttons game-controls" id="jump-buttons" style="display:none;">
+        <div class="btn btn-play jump-pad" id="btn-jump">
+            <div>⬆ JUMP (2단 점프)</div>
+        </div>
+        <div class="btn btn-sleep game-pause-btn" id="btn-toggle-jump">
+            <div>▶ PLAY / ⏸ STOP</div>
+        </div>
+    </div>
 </div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="js/data.js?v=20261121b"></script>
-<script defer src="js/sprites.js?v=20261121b"></script>
-<script defer src="js/sound.js?v=20261121b"></script>
-<script defer src="js/supabase-config.js?v=20261121b"></script>
-<script defer src="js/storage.js?v=20261121b"></script>
-<script defer src="js/minigame.js?v=20261121b"></script>
-<script defer src="js/app.js?v=20261121b"></script>
+<script defer src="js/data.js?v=20261121p"></script>
+<script defer src="js/sprites.js?v=20261121p"></script>
+<script defer src="js/sound.js?v=20261121p"></script>
+<script defer src="js/supabase-config.js?v=20261121p"></script>
+<script defer src="js/storage.js?v=20261121p"></script>
+<script defer src="js/minigame.js?v=20261121p"></script>
+<script defer src="js/app.js?v=20261121p"></script>
 </body>
 </html>

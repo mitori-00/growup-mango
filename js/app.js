@@ -11,9 +11,11 @@ window.MangoGame = window.MangoGame || {};
     const deviceTitle = document.getElementById('device-title');
     const homeScreen = document.getElementById('home-screen');
     const gameScreen = document.getElementById('game-screen');
+    const jumpScreen = document.getElementById('jump-screen');
     const themeDecor = document.getElementById('theme-decor');
     const homeBtns = document.getElementById('home-buttons');
     const gameBtns = document.getElementById('game-buttons');
+    const jumpBtns = document.getElementById('jump-buttons');
 
     const levelDisplay = document.getElementById('level-display');
     const coinDisplay = document.getElementById('coin-display');
@@ -29,6 +31,7 @@ window.MangoGame = window.MangoGame || {};
     const homeMango = document.getElementById('home-mango');
     const homeMangoSvg = document.getElementById('home-mango-svg');
     const gameMangoSvg = document.getElementById('game-mango-svg');
+    const jumpMangoSvg = document.getElementById('jump-mango-svg');
 
     const foodModal = document.getElementById('food-modal');
     const foodList = document.getElementById('food-list');
@@ -44,6 +47,7 @@ window.MangoGame = window.MangoGame || {};
     const dexCareSummary = document.getElementById('dex-care-summary');
     const dexFooter = document.getElementById('dex-footer');
     const rankModal = document.getElementById('rank-modal');
+    const outsideModal = document.getElementById('outside-modal');
     const rankList = document.getElementById('rank-list');
     const syncBadge = document.getElementById('sync-badge');
     const nicknameInput = document.getElementById('nickname-input');
@@ -84,32 +88,64 @@ window.MangoGame = window.MangoGame || {};
         }
     }
 
-    function determineAdultForm() {
-        const { feed, play, sleep } = state.careStats;
-        const maxVal = Math.max(feed, play, sleep);
-        const minVal = Math.min(feed, play, sleep);
+    function meetsFormRequirement(form) {
+        const req = form.requirement || { minLevel: 1 };
+        const cs = state.careStats || { feed: 0, play: 0, sleep: 0 };
+        if (state.level < (req.minLevel || 1)) return false;
+        if (req.feed && (cs.feed || 0) < req.feed) return false;
+        if (req.play && (cs.play || 0) < req.play) return false;
+        if (req.sleep && (cs.sleep || 0) < req.sleep) return false;
+        return true;
+    }
 
-        if (maxVal - minVal <= 2 && feed + play + sleep >= 3) {
-            return 'adult_balanced';
+    function getFormProgressText(form) {
+        const req = form.requirement || { minLevel: 1 };
+        const cs = state.careStats || { feed: 0, play: 0, sleep: 0 };
+        const parts = [`Lv.${Math.min(state.level, req.minLevel)}/${req.minLevel}`];
+        if (req.feed) parts.push(`밥 ${Math.min(cs.feed || 0, req.feed)}/${req.feed}`);
+        if (req.play) parts.push(`놀이 ${Math.min(cs.play || 0, req.play)}/${req.play}`);
+        if (req.sleep) parts.push(`수면 ${Math.min(cs.sleep || 0, req.sleep)}/${req.sleep}`);
+        return parts.join(' · ');
+    }
+
+    function checkUnlockableForms(notify = false) {
+        const newlyUnlocked = [];
+        ns.EVOLUTION_FORMS.forEach((form) => {
+            if (meetsFormRequirement(form) && !state.unlockedDex.includes(form.id)) {
+                unlockDexForm(form.id);
+                newlyUnlocked.push(form);
+            }
+        });
+
+        if (state.level >= 11 && (!state.adultForm || !state.unlockedDex.includes(state.adultForm))) {
+            const unlockedAdults = ns.EVOLUTION_FORMS.filter(
+                (f) => f.stage === 'ADULT' && state.unlockedDex.includes(f.id)
+            );
+            if (unlockedAdults.length > 0) {
+                state.adultForm = unlockedAdults[0].id;
+            }
         }
-        if (feed >= play && feed >= sleep) return 'adult_foodie';
-        if (play >= feed && play >= sleep) return 'adult_sporty';
-        return 'adult_sleepy';
+
+        if (notify && newlyUnlocked.length > 0) {
+            const latest = newlyUnlocked[newlyUnlocked.length - 1];
+            showBubble(`도감 해금! ${getFormDisplayName(latest)} ✨`);
+            if (ns.Sound) ns.Sound.playEvolution();
+            save(true);
+        }
+        return newlyUnlocked;
     }
 
     function getCurrentFormId() {
+        checkUnlockableForms(false);
         if (state.level >= 11) {
-            if (!state.adultForm) {
-                state.adultForm = determineAdultForm();
-                unlockDexForm(state.adultForm);
+            if (state.adultForm && state.unlockedDex.includes(state.adultForm)) {
+                return state.adultForm;
             }
-            return state.adultForm;
-        }
-        if (state.level >= 6) {
-            unlockDexForm('teen');
             return 'teen';
         }
-        unlockDexForm('baby');
+        if (state.level >= 6) {
+            return 'teen';
+        }
         return 'baby';
     }
 
@@ -120,10 +156,10 @@ window.MangoGame = window.MangoGame || {};
     function recordCare(type, amount = 1) {
         if (!state.careStats) state.careStats = { feed: 0, play: 0, sleep: 0 };
         state.careStats[type] = (state.careStats[type] || 0) + amount;
+        checkUnlockableForms(true);
     }
 
     function addExp(amount) {
-        const prevLevel = state.level;
         state.exp += amount;
         let leveledUp = false;
         while (state.exp >= 100) {
@@ -133,22 +169,8 @@ window.MangoGame = window.MangoGame || {};
         }
         if (!leveledUp) return;
 
-        let evolvedForm = null;
-        if (prevLevel < 6 && state.level >= 6) {
-            unlockDexForm('teen');
-            evolvedForm = getFormMeta('teen');
-        }
-        if (prevLevel < 11 && state.level >= 11) {
-            state.adultForm = determineAdultForm();
-            unlockDexForm(state.adultForm);
-            evolvedForm = getFormMeta(state.adultForm);
-        }
-
-        if (evolvedForm) {
-            showBubble(`진화! ${getFormDisplayName(evolvedForm)}`);
-            if (ns.Sound) ns.Sound.playEvolution();
-            save(true);
-        } else {
+        const unlocked = checkUnlockableForms(true);
+        if (unlocked.length === 0) {
             showBubble('LEVEL UP!');
             if (ns.Sound) ns.Sound.playLevelUp();
         }
@@ -161,6 +183,9 @@ window.MangoGame = window.MangoGame || {};
             ns.Sprites.render(homeMangoSvg, char.id, { withBasket: false, isSleeping });
             if (renderedCharId !== char.id) {
                 ns.Sprites.render(gameMangoSvg, char.id, { withBasket: true, isSleeping: false });
+                if (jumpMangoSvg) {
+                    ns.Sprites.render(jumpMangoSvg, char.id, { withBasket: false, isSleeping: false });
+                }
             }
             renderedCharId = char.id;
             renderedSleeping = isSleeping;
@@ -173,7 +198,8 @@ window.MangoGame = window.MangoGame || {};
     function applyTheme() {
         const themeClasses = ['theme-default', 'theme-sakura', 'theme-beach', 'theme-camping'];
         const activeTheme = state.equippedTheme || 'theme-default';
-        [homeScreen, gameScreen].forEach((el) => {
+        [homeScreen, gameScreen, jumpScreen].forEach((el) => {
+            if (!el) return;
             el.classList.remove(...themeClasses);
             el.classList.add(activeTheme);
         });
@@ -182,38 +208,45 @@ window.MangoGame = window.MangoGame || {};
             ? ns.Sprites.buildThemeSvg(activeTheme)
             : '';
         const gameThemeDecor = document.getElementById('game-theme-decor');
+        const jumpThemeDecor = document.getElementById('jump-theme-decor');
         if (themeDecor) themeDecor.innerHTML = themeSvg;
         if (gameThemeDecor) gameThemeDecor.innerHTML = themeSvg;
+        if (jumpThemeDecor) jumpThemeDecor.innerHTML = themeSvg;
     }
 
     function applyEvolutionVisual(formId) {
-        const formClasses = ['form-adult_foodie', 'form-adult_sporty', 'form-adult_sleepy', 'form-adult_balanced'];
-        [homeMangoSvg, gameMangoSvg].forEach((svg) => {
+        const formClasses = ['form-adult_foodie', 'form-adult_sporty', 'form-adult_sleepy', 'form-adult_balanced', 'form-adult_royal'];
+        [homeMangoSvg, gameMangoSvg, jumpMangoSvg].forEach((svg) => {
+            if (!svg) return;
             svg.classList.remove(...formClasses);
             if (formId.startsWith('adult_')) {
                 svg.classList.add(`form-${formId}`);
             }
-        });
-
-        document.querySelectorAll('.evo-layer').forEach((layer) => {
-            layer.style.display = 'none';
-        });
-        if (formId.startsWith('adult_')) {
-            document.querySelectorAll(`.evo-${formId}`).forEach((layer) => {
-                layer.style.display = 'inline';
+            svg.querySelectorAll('.evo-layer').forEach((layer) => {
+                layer.style.display = 'none';
             });
-        }
+            if (formId.startsWith('adult_')) {
+                svg.querySelectorAll(`.evo-${formId}`).forEach((layer) => {
+                    layer.style.display = 'inline';
+                });
+            }
+        });
     }
 
     function applyAccessories() {
-        document.querySelectorAll('.acc-layer').forEach((layer) => {
-            layer.style.display = 'none';
-        });
-        if (!state.equippedAccessory) return;
-        const item = ns.SHOP_ITEMS.find((it) => it.id === state.equippedAccessory);
-        if (!item || !item.cssClass) return;
-        document.querySelectorAll(`.${item.cssClass}`).forEach((el) => {
-            el.style.display = 'inline';
+        const item = state.equippedAccessory
+            ? ns.SHOP_ITEMS.find((it) => it.id === state.equippedAccessory)
+            : null;
+        [homeMangoSvg, gameMangoSvg, jumpMangoSvg].forEach((svg) => {
+            if (!svg) return;
+            svg.querySelectorAll('.acc-layer').forEach((layer) => {
+                layer.style.display = 'none';
+            });
+            if (item && item.cssClass) {
+                svg.querySelectorAll(`.${item.cssClass}`).forEach((el) => {
+                    el.style.display = 'inline';
+                });
+            }
         });
     }
 
@@ -247,6 +280,10 @@ window.MangoGame = window.MangoGame || {};
         homeMangoSvg.style.height = `${pixelSize}px`;
         gameMangoSvg.style.width = `${gameSize}px`;
         gameMangoSvg.style.height = `${gameSize}px`;
+        if (jumpMangoSvg) {
+            jumpMangoSvg.style.width = `${gameSize}px`;
+            jumpMangoSvg.style.height = `${gameSize}px`;
+        }
 
         homeScreen.classList.toggle('sleeping', state.isSleeping);
         zzzIcon.style.display = state.isSleeping ? 'block' : 'none';
@@ -264,6 +301,7 @@ window.MangoGame = window.MangoGame || {};
         charModal.style.display = 'none';
         dexModal.style.display = 'none';
         rankModal.style.display = 'none';
+        if (outsideModal) outsideModal.style.display = 'none';
     }
 
     // 캐릭터 선택 모달 (망고 / 토리)
@@ -550,30 +588,51 @@ window.MangoGame = window.MangoGame || {};
     }
 
     function renderDexList() {
+        checkUnlockableForms(false);
         const currentFormId = getCurrentFormId();
         const total = ns.EVOLUTION_FORMS.length;
         dexCountDisplay.textContent = `${state.unlockedDex.length}/${total}`;
 
         const { feed, play, sleep } = state.careStats;
-        const predicted = getFormMeta(determineAdultForm());
-        const forecastText = state.level < 11 ? ` · 예상: ${getFormDisplayName(predicted)}` : ' · 성체 진화 완료';
-        dexCareSummary.textContent = `케어 — 밥 ${feed} · 놀이 ${play} · 수면 ${sleep}${forecastText}`;
+        const adultHint = state.level >= 11
+            ? ' · 해금된 성견 외형을 선택할 수 있어요!'
+            : ' · 성견(Lv.11+) 달성 시 해금 외형 선택 가능';
+        dexCareSummary.textContent = `누적 케어 — 밥 ${feed} · 놀이 ${play} · 수면 ${sleep}${adultHint}`;
 
         dexList.innerHTML = '';
         ns.EVOLUTION_FORMS.forEach((form) => {
             const unlocked = state.unlockedDex.includes(form.id);
             const isCurrent = currentFormId === form.id;
+            const canSelectAdult = unlocked && form.stage === 'ADULT' && state.level >= 11;
             const card = document.createElement('div');
             card.className = `item-card dex-card ${unlocked ? '' : 'locked'}`.trim();
             card.innerHTML = `
                 <div class="item-info">
                     <div class="item-name">
                         ${unlocked ? `${form.icon} ${getFormDisplayName(form)}` : '🔒 ???'}
-                        ${isCurrent ? '<span class="dex-now-tag">현재</span>' : ''}
+                        ${isCurrent && !canSelectAdult ? '<span class="dex-now-tag">현재</span>' : ''}
                     </div>
-                    <div class="item-desc">${unlocked ? form.desc : `조건: ${form.condition}`}</div>
+                    <div class="item-desc">${unlocked ? form.desc : `조건: ${form.condition} (${getFormProgressText(form)})`}</div>
+                    ${unlocked ? `<div class="dex-cond">달성 조건: ${form.condition}</div>` : ''}
                 </div>
             `;
+
+            if (canSelectAdult) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = isCurrent ? 'item-btn equipped' : 'item-btn';
+                btn.textContent = isCurrent ? '적용중' : '적용';
+                btn.disabled = isCurrent;
+                btn.addEventListener('click', () => {
+                    if (ns.Sound) ns.Sound.playLevelUp();
+                    state.adultForm = form.id;
+                    showBubble(`외형 변경! ${getFormDisplayName(form)}`);
+                    updateUI();
+                    renderDexList();
+                    save(true);
+                });
+                card.appendChild(btn);
+            }
             dexList.appendChild(card);
         });
 
@@ -659,7 +718,28 @@ window.MangoGame = window.MangoGame || {};
         save(true);
     }
 
-    // 미니게임 인스턴스
+    function handleMinigameComplete({ score, baseCoins, clearBonus, goldCoins, survivedAll }) {
+        recordCare('play', 2);
+        const isNewRecord = score > state.highScore;
+        const recordBonus = isNewRecord ? ns.MINIGAME_CONFIG.newRecordBonusCoins : 0;
+        if (isNewRecord) {
+            state.highScore = score;
+        }
+        const totalCoins = baseCoins + clearBonus + goldCoins + recordBonus;
+        state.coins += totalCoins;
+        state.fatigue = clamp(state.fatigue + ns.MINIGAME_CONFIG.fatigueCost, 0, 100);
+        updateUI();
+        save(true);
+        ns.StorageService.recordScore({
+            score,
+            coinsEarned: totalCoins,
+            survivedAll,
+            nickname: state.nickname
+        });
+        return { score, baseCoins, clearBonus, goldCoins, recordBonus, totalCoins, isNewRecord };
+    }
+
+    // 미니게임 1: 캐치 게임
     const minigame = new ns.CatchMinigame({
         screenEl: gameScreen,
         mangoEl: document.getElementById('game-mango'),
@@ -676,58 +756,89 @@ window.MangoGame = window.MangoGame || {};
             state.happy = clamp(state.happy + happy, 0, 100);
             addExp(exp);
         },
-        onComplete: ({ score, baseCoins, clearBonus, goldCoins, survivedAll }) => {
-            recordCare('play', 2);
-            const isNewRecord = score > state.highScore;
-            const recordBonus = isNewRecord ? ns.MINIGAME_CONFIG.newRecordBonusCoins : 0;
-            if (isNewRecord) {
-                state.highScore = score;
-            }
-            const totalCoins = baseCoins + clearBonus + goldCoins + recordBonus;
-            state.coins += totalCoins;
-            state.fatigue = clamp(state.fatigue + ns.MINIGAME_CONFIG.fatigueCost, 0, 100);
-            updateUI();
-            save(true);
-            ns.StorageService.recordScore({
-                score,
-                coinsEarned: totalCoins,
-                survivedAll,
-                nickname: state.nickname
-            });
-            return { score, baseCoins, clearBonus, goldCoins, recordBonus, totalCoins, isNewRecord };
-        }
+        onComplete: handleMinigameComplete
+    });
+
+    // 미니게임 2: 산책 점프 런
+    const jumpGame = new ns.JumpRunMinigame({
+        screenEl: jumpScreen,
+        mangoEl: document.getElementById('jump-mango'),
+        scoreEl: document.getElementById('jump-score-display'),
+        timeEl: document.getElementById('jump-time-display'),
+        heartsEl: document.getElementById('jump-hearts-display'),
+        comboEl: document.getElementById('jump-combo-badge'),
+        guideEl: document.getElementById('jump-guide'),
+        resultEl: document.getElementById('jump-result'),
+        resultTitleEl: document.getElementById('jump-result-title'),
+        resultDetailsEl: document.getElementById('jump-result-details'),
+        getCharacterId: () => state.character,
+        onStatGain: ({ happy, exp }) => {
+            state.happy = clamp(state.happy + happy, 0, 100);
+            addExp(exp);
+        },
+        onComplete: handleMinigameComplete
     });
 
     const btnGoHome = document.getElementById('btn-go-home');
 
-    function toggleScreen() {
-        if (isHome) {
-            if (state.isSleeping) {
-                showBubble('ZZZ... SLEEPING');
-                return;
-            }
-            if (state.fatigue >= ns.MINIGAME_CONFIG.entryMaxFatigue) {
-                showBubble('피곤해요! 잠이나 드링크!');
-                return;
-            }
-            closeAllModals();
-            homeScreen.style.display = 'none';
-            homeBtns.style.display = 'none';
-            gameScreen.style.display = 'flex';
-            gameBtns.style.display = 'flex';
-            if (btnGoHome) btnGoHome.style.display = 'inline-flex';
-            isHome = false;
-            minigame.reset();
-        } else {
-            minigame.stopLoop();
-            gameScreen.style.display = 'none';
-            gameBtns.style.display = 'none';
-            homeScreen.style.display = 'flex';
-            homeBtns.style.display = 'flex';
-            if (btnGoHome) btnGoHome.style.display = 'none';
-            isHome = true;
-            updateUI();
+    function canEnterOutside() {
+        if (state.isSleeping) {
+            showBubble('ZZZ... SLEEPING');
+            return false;
         }
+        if (state.fatigue >= ns.MINIGAME_CONFIG.entryMaxFatigue) {
+            showBubble('피곤해요! 잠이나 드링크!');
+            return false;
+        }
+        return true;
+    }
+
+    function openOutsideModal() {
+        if (!canEnterOutside()) return;
+        closeAllModals();
+        if (outsideModal) outsideModal.style.display = 'flex';
+    }
+
+    function enterCatchGame() {
+        if (!canEnterOutside()) return;
+        closeAllModals();
+        homeScreen.style.display = 'none';
+        homeBtns.style.display = 'none';
+        jumpScreen.style.display = 'none';
+        jumpBtns.style.display = 'none';
+        gameScreen.style.display = 'flex';
+        gameBtns.style.display = 'flex';
+        if (btnGoHome) btnGoHome.style.display = 'inline-flex';
+        isHome = false;
+        minigame.reset();
+    }
+
+    function enterJumpGame() {
+        if (!canEnterOutside()) return;
+        closeAllModals();
+        homeScreen.style.display = 'none';
+        homeBtns.style.display = 'none';
+        gameScreen.style.display = 'none';
+        gameBtns.style.display = 'none';
+        jumpScreen.style.display = 'flex';
+        jumpBtns.style.display = 'flex';
+        if (btnGoHome) btnGoHome.style.display = 'inline-flex';
+        isHome = false;
+        jumpGame.reset();
+    }
+
+    function goHome() {
+        minigame.stopLoop();
+        jumpGame.stopLoop();
+        gameScreen.style.display = 'none';
+        gameBtns.style.display = 'none';
+        jumpScreen.style.display = 'none';
+        jumpBtns.style.display = 'none';
+        homeScreen.style.display = 'flex';
+        homeBtns.style.display = 'flex';
+        if (btnGoHome) btnGoHome.style.display = 'none';
+        isHome = true;
+        updateUI();
     }
 
     // 홈 화면 산책 모션
@@ -793,7 +904,10 @@ window.MangoGame = window.MangoGame || {};
     document.getElementById('btn-food').addEventListener('click', withClickSound(openFoodModal));
     document.getElementById('btn-play').addEventListener('click', withClickSound(playMango));
     document.getElementById('btn-sleep').addEventListener('click', withClickSound(toggleSleep));
-    document.getElementById('btn-outside').addEventListener('click', withClickSound(toggleScreen));
+    document.getElementById('btn-outside').addEventListener('click', withClickSound(openOutsideModal));
+    document.getElementById('close-outside-btn').addEventListener('click', withClickSound(() => { if (outsideModal) outsideModal.style.display = 'none'; }));
+    document.getElementById('pick-catch-btn').addEventListener('click', withClickSound(enterCatchGame));
+    document.getElementById('pick-jump-btn').addEventListener('click', withClickSound(enterJumpGame));
 
     document.getElementById('char-btn').addEventListener('click', withClickSound(openCharModal));
     document.getElementById('dex-btn').addEventListener('click', withClickSound(openDexModal));
@@ -824,17 +938,45 @@ window.MangoGame = window.MangoGame || {};
     });
 
     document.getElementById('btn-toggle-game').addEventListener('click', withClickSound(() => minigame.toggle()));
-    document.getElementById('btn-go-home').addEventListener('click', withClickSound(toggleScreen));
+    document.getElementById('btn-go-home').addEventListener('click', withClickSound(goHome));
     document.getElementById('result-replay-btn').addEventListener('click', withClickSound(() => {
         if (state.fatigue >= ns.MINIGAME_CONFIG.entryMaxFatigue) {
-            toggleScreen();
+            goHome();
             showBubble('피곤해요! 휴식 필요!');
             return;
         }
         minigame.reset();
         minigame.start();
     }));
-    document.getElementById('result-home-btn').addEventListener('click', withClickSound(toggleScreen));
+    document.getElementById('result-home-btn').addEventListener('click', withClickSound(goHome));
+
+    const btnJump = document.getElementById('btn-jump');
+    if (btnJump) {
+        btnJump.addEventListener('touchstart', (e) => { e.preventDefault(); jumpGame.jump(); }, { passive: false });
+        btnJump.addEventListener('mousedown', () => jumpGame.jump());
+    }
+    if (jumpScreen) {
+        jumpScreen.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.screen-modal')) return;
+            e.preventDefault();
+            jumpGame.jump();
+        }, { passive: false });
+        jumpScreen.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.screen-modal')) return;
+            jumpGame.jump();
+        });
+    }
+    document.getElementById('btn-toggle-jump').addEventListener('click', withClickSound(() => jumpGame.toggle()));
+    document.getElementById('jump-replay-btn').addEventListener('click', withClickSound(() => {
+        if (state.fatigue >= ns.MINIGAME_CONFIG.entryMaxFatigue) {
+            goHome();
+            showBubble('피곤해요! 휴식 필요!');
+            return;
+        }
+        jumpGame.reset();
+        jumpGame.start();
+    }));
+    document.getElementById('jump-home-btn').addEventListener('click', withClickSound(goHome));
 
     // 모바일 터치 & 마우스/키보드 조작
     function bindHoldButton(btn, setFlag) {
@@ -852,6 +994,10 @@ window.MangoGame = window.MangoGame || {};
     window.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft') minigame.moveLeft = true;
         if (e.key === 'ArrowRight') minigame.moveRight = true;
+        if ((e.key === ' ' || e.key === 'ArrowUp') && jumpScreen && jumpScreen.style.display === 'flex') {
+            e.preventDefault();
+            jumpGame.jump();
+        }
     });
     window.addEventListener('keyup', (e) => {
         if (e.key === 'ArrowLeft') minigame.moveLeft = false;

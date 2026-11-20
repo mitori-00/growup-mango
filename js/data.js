@@ -2,20 +2,28 @@ window.MangoGame = window.MangoGame || {};
 
 window.MangoGame.CHARACTERS = [
     {
-        id: 'mango',
-        name: '망고',
-        title: 'GROW UP MANGO',
-        breed: '포메라니안',
-        desc: '노릇한 귀·등과 풍성한 하얀 목털의 해맑은 포메',
-        sizeScale: 1.0
-    },
-    {
         id: 'tori',
         name: '토리',
         title: 'GROW UP TORI',
         breed: '2kg 말티즈',
-        desc: '작고 복슬복슬한 순한 눈망울의 하얀 말티즈',
-        sizeScale: 0.88
+        desc: '아담하고 여리여리한 2kg 하얀 강아지',
+        sizeScale: 0.94
+    },
+    {
+        id: 'mango',
+        name: '망고',
+        title: 'GROW UP MANGO',
+        breed: '4.5kg 포메라니안',
+        desc: '노릇한 귀·등과 풍성한 하얀 목털의 4.5kg 강아지',
+        sizeScale: 1.05
+    },
+    {
+        id: 'mimi',
+        name: '미미',
+        title: 'GROW UP MIMI',
+        breed: '6kg 복슬 강아지',
+        desc: '구름처럼 몽실몽실한 복슬털의 듬직한 6kg 강아지',
+        sizeScale: 1.16
     }
 ];
 
@@ -52,6 +60,7 @@ window.MangoGame.EVOLUTION_FORMS = [
         namePrefix: '아기',
         icon: '🐶',
         condition: 'Lv.01 기본 형태',
+        requirement: { minLevel: 1 },
         desc: '호기심 많은 아기 강아지 시절이에요.'
     },
     {
@@ -59,40 +68,63 @@ window.MangoGame.EVOLUTION_FORMS = [
         stage: 'TEEN',
         namePrefix: '청소년',
         icon: '🐕',
-        condition: 'Lv.06 도달',
+        condition: 'Lv.06 달성',
+        requirement: { minLevel: 6 },
         desc: '부쩍 자라서 산책과 놀이를 좋아해요.'
+    },
+    {
+        id: 'adult_basic',
+        stage: 'ADULT',
+        namePrefix: '성견',
+        icon: '🐾',
+        condition: 'Lv.11 달성',
+        requirement: { minLevel: 11 },
+        desc: '별도 장식 없이 본연의 모습으로 늠름하게 자란 기본 성견이에요.'
     },
     {
         id: 'adult_foodie',
         stage: 'ADULT',
         namePrefix: '먹보',
         icon: '🍖',
-        condition: 'Lv.11 달성 시 밥 비율 1위',
+        condition: 'Lv.11 달성 + 누적 밥 주기 10회',
+        requirement: { minLevel: 11, feed: 10 },
         desc: '맛있는 간식을 제일 좋아하는 빨간 턱받이 스타일!'
-    },
-    {
-        id: 'adult_sporty',
-        stage: 'ADULT',
-        namePrefix: '에너자이저',
-        icon: '⚽',
-        condition: 'Lv.11 달성 시 놀이 비율 1위',
-        desc: '스포츠 머리띠를 두른 체력왕 스타일!'
     },
     {
         id: 'adult_sleepy',
         stage: 'ADULT',
         namePrefix: '잠꾸러기',
         icon: '💤',
-        condition: 'Lv.11 달성 시 수면 비율 1위',
+        condition: 'Lv.15 달성 + 누적 재우기 5회',
+        requirement: { minLevel: 15, sleep: 5 },
         desc: '수면 모자를 쓰고 늘 포근하게 졸고 있는 스타일!'
+    },
+    {
+        id: 'adult_sporty',
+        stage: 'ADULT',
+        namePrefix: '에너자이저',
+        icon: '⚽',
+        condition: 'Lv.20 달성 + 누적 놀이·미니게임 10회',
+        requirement: { minLevel: 20, play: 10 },
+        desc: '스포츠 머리띠와 앞발 아대를 두른 체력왕 스타일!'
     },
     {
         id: 'adult_balanced',
         stage: 'ADULT',
         namePrefix: '황금 밸런스',
         icon: '✨',
-        condition: 'Lv.11 달성 시 밥·놀이·수면 균형',
-        desc: '고르게 사랑받아 황금빛으로 빛나는 희귀 형태!'
+        condition: 'Lv.25 달성 + 밥 10 · 놀이 10 · 수면 5 모두 달성',
+        requirement: { minLevel: 25, feed: 10, play: 10, sleep: 5 },
+        desc: '모든 케어를 고르게 채워 황금 헤일로로 빛나는 희귀 형태!'
+    },
+    {
+        id: 'adult_royal',
+        stage: 'ADULT',
+        namePrefix: '로얄',
+        icon: '👑',
+        condition: 'Lv.30 달성 + 밥 20 · 놀이 20 · 수면 10 모두 달성',
+        requirement: { minLevel: 30, feed: 20, play: 20, sleep: 10 },
+        desc: '최고의 사랑으로 자라난 왕실 망토와 보석 왕관 스타일!'
     }
 ];
 
@@ -118,6 +150,11 @@ window.MangoGame.MINIGAME_ITEMS = {
         tier1: { emoji: '🥩', label: '고기', points: 30, happy: 4, exp: 12, speedBonus: 18, style: 'gold' },
         tier2: { emoji: '🍳', label: '계란', points: 20, happy: 3, exp: 8, speedBonus: 10, style: 'gold' },
         tier3: { emoji: '🧸', label: '장난감', points: 10, happy: 1, exp: 4, speedBonus: 0, style: '' }
+    },
+    mimi: {
+        tier1: { emoji: '💖', label: '하트', points: 30, happy: 4, exp: 12, speedBonus: 18, style: 'gold' },
+        tier2: { emoji: '🥐', label: '빵', points: 20, happy: 3, exp: 8, speedBonus: 10, style: 'gold' },
+        tier3: { emoji: '🛏️', label: '베개', points: 10, happy: 1, exp: 4, speedBonus: 0, style: '' }
     }
 };
 

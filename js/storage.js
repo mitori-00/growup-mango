@@ -21,10 +21,13 @@ window.MangoGame = window.MangoGame || {};
             ? (typeof parsed.hasSelectedCharacter === 'boolean' ? parsed.hasSelectedCharacter : true)
             : false;
 
+        const validChars = ['mango', 'tori', 'mimi'];
+        const charId = validChars.includes(parsed.character) ? parsed.character : 'mango';
+
         return {
             ...base,
             ...parsed,
-            character: parsed.character === 'tori' ? 'tori' : 'mango',
+            character: charId,
             hasSelectedCharacter,
             nickname: parsed.nickname || '망고집사',
             careStats: { ...base.careStats, ...(parsed.careStats || {}) },

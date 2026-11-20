@@ -149,8 +149,127 @@ window.MangoGame = window.MangoGame || {};
         `;
     }
 
+    function buildMimiBody() {
+        return `
+            <!-- Plush Feathery White Tail -->
+            <rect x="1" y="9" width="5" height="6" fill="#ffffff" class="fur-part"/>
+            <rect x="2" y="12" width="3" height="2" fill="#e4e7f2"/>
+            <rect x="0" y="10" width="1" height="4" fill="#222222"/>
+            <rect x="1" y="8" width="4" height="1" fill="#222222"/>
+            <rect x="1" y="15" width="4" height="1" fill="#222222"/>
+            <rect x="5" y="9" width="1" height="2" fill="#222222"/>
+
+            <!-- Plump Curly Cloud-Like 6kg White Body -->
+            <rect x="4" y="11" width="14" height="8" fill="#ffffff" class="fur-part"/>
+            <rect x="5" y="16" width="12" height="3" fill="#eef0f8"/>
+            <rect x="6" y="13" width="2" height="1" fill="#e2e5f0"/>
+            <rect x="10" y="15" width="2" height="1" fill="#e2e5f0"/>
+            <rect x="14" y="14" width="2" height="1" fill="#e2e5f0"/>
+            <rect x="5" y="10" width="6" height="1" fill="#222222"/>
+            <rect x="18" y="12" width="1" height="6" fill="#222222"/>
+            <rect x="8" y="19" width="5" height="1" fill="#222222"/>
+
+            <!-- Sturdy Fluffy Thick Legs -->
+            <rect x="4" y="17" width="4" height="4" fill="#ffffff" class="fur-part"/>
+            <rect x="5" y="20" width="2" height="1" fill="#d9c5be"/>
+            <rect x="3" y="14" width="1" height="7" fill="#222222"/>
+            <rect x="8" y="18" width="1" height="3" fill="#222222"/>
+            <rect x="4" y="21" width="4" height="1" fill="#222222"/>
+
+            <rect x="13" y="17" width="4" height="4" fill="#ffffff" class="fur-part"/>
+            <rect x="14" y="20" width="2" height="1" fill="#d9c5be"/>
+            <rect x="12" y="18" width="1" height="3" fill="#222222"/>
+            <rect x="17" y="17" width="1" height="4" fill="#222222"/>
+            <rect x="13" y="21" width="4" height="1" fill="#222222"/>
+
+            <!-- Fluffy Tousled Crown Fur (Mimi's Signature Dandelion Top) -->
+            <rect x="11" y="2" width="8" height="3" fill="#ffffff"/>
+            <rect x="13" y="1" width="4" height="2" fill="#ffffff"/>
+            <rect x="13" y="0" width="4" height="1" fill="#222222"/>
+            <rect x="11" y="1" width="2" height="1" fill="#222222"/>
+            <rect x="17" y="1" width="2" height="1" fill="#222222"/>
+            <rect x="10" y="2" width="1" height="2" fill="#222222"/>
+            <rect x="19" y="2" width="1" height="2" fill="#222222"/>
+
+            <!-- Big Round Plush White Head -->
+            <rect x="9" y="4" width="12" height="9" fill="#ffffff" class="fur-light"/>
+            <rect x="11" y="12" width="8" height="3" fill="#ffffff"/>
+            <rect x="11" y="13" width="7" height="1" fill="#f3ece9"/>
+            <rect x="21" y="8" width="1" height="4" fill="#222222"/>
+            <rect x="20" y="12" width="1" height="1" fill="#222222"/>
+
+            <!-- Full Curly Drooping Maltese Ears -->
+            <rect x="6" y="5" width="4" height="7" fill="#ffffff"/>
+            <rect x="7" y="8" width="2" height="4" fill="#e4e7f2"/>
+            <rect x="6" y="4" width="4" height="1" fill="#222222"/>
+            <rect x="5" y="5" width="1" height="6" fill="#222222"/>
+            <rect x="6" y="11" width="1" height="2" fill="#222222"/>
+            <rect x="7" y="12" width="3" height="1" fill="#222222"/>
+            <rect x="10" y="8" width="1" height="3" fill="#666666"/>
+
+            <rect x="20" y="5" width="3" height="6" fill="#ffffff"/>
+            <rect x="21" y="7" width="1" height="3" fill="#e4e7f2"/>
+            <rect x="20" y="4" width="2" height="1" fill="#222222"/>
+            <rect x="23" y="5" width="1" height="5" fill="#222222"/>
+            <rect x="22" y="10" width="1" height="1" fill="#222222"/>
+
+            <!-- Expressive Dark Eyes, Cute Button Nose & Soft Curious Mouth -->
+            <rect x="13" y="7" width="2" height="2" fill="#1a1a1a"/>
+            <rect x="13" y="7" width="1" height="1" fill="#ffffff"/>
+            <rect x="18" y="7" width="2" height="2" fill="#1a1a1a"/>
+            <rect x="18" y="7" width="1" height="1" fill="#ffffff"/>
+            <rect x="16" y="9" width="2" height="1" fill="#222222"/>
+            <rect x="11" y="9" width="2" height="1" fill="#ffb0c0"/>
+            <rect x="16" y="11" width="2" height="1" fill="#333333"/>
+        `;
+    }
+
+    function buildMimiSleepingBody() {
+        return `
+            <!-- Big Cozy Curled Tail -->
+            <rect x="1" y="14" width="5" height="6" fill="#ffffff" class="fur-part"/>
+            <rect x="2" y="16" width="3" height="3" fill="#e4e7f2"/>
+            <rect x="0" y="15" width="1" height="4" fill="#222222"/>
+            <rect x="1" y="13" width="4" height="1" fill="#222222"/>
+            <rect x="1" y="20" width="4" height="1" fill="#222222"/>
+
+            <!-- Plump Curled Cloud Body -->
+            <rect x="4" y="12" width="12" height="9" fill="#ffffff" class="fur-part"/>
+            <rect x="5" y="18" width="10" height="3" fill="#eef0f8"/>
+            <rect x="6" y="15" width="2" height="1" fill="#e2e5f0"/>
+            <rect x="5" y="11" width="8" height="1" fill="#222222"/>
+            <rect x="3" y="12" width="1" height="8" fill="#222222"/>
+            <rect x="4" y="21" width="17" height="1" fill="#222222"/>
+
+            <!-- Tucked Fluffy Paws -->
+            <rect x="17" y="19" width="4" height="2" fill="#ffffff"/>
+            <rect x="21" y="19" width="1" height="2" fill="#222222"/>
+
+            <!-- Tousled Crown & Round Sleeping Head -->
+            <rect x="12" y="9" width="6" height="2" fill="#ffffff"/>
+            <rect x="13" y="8" width="4" height="1" fill="#222222"/>
+            <rect x="10" y="11" width="11" height="8" fill="#ffffff" class="fur-light"/>
+            <rect x="10" y="10" width="3" height="1" fill="#222222"/>
+            <rect x="17" y="10" width="3" height="1" fill="#222222"/>
+            <rect x="21" y="12" width="1" height="7" fill="#222222"/>
+
+            <!-- Full Drooping Ears -->
+            <rect x="7" y="12" width="4" height="6" fill="#ffffff"/>
+            <rect x="8" y="15" width="2" height="3" fill="#e4e7f2"/>
+            <rect x="7" y="11" width="3" height="1" fill="#222222"/>
+            <rect x="6" y="12" width="1" height="5" fill="#222222"/>
+            <rect x="7" y="17" width="3" height="1" fill="#222222"/>
+
+            <!-- Closed Sleeping Eyes, Nose & Blush -->
+            <rect x="13" y="14" width="2" height="1" fill="#222222"/>
+            <rect x="18" y="14" width="2" height="1" fill="#222222"/>
+            <rect x="11" y="15" width="2" height="1" fill="#ffb0c0"/>
+            <rect x="16" y="16" width="2" height="1" fill="#222222"/>
+        `;
+    }
+
     function buildEvolutionOverlays(charId) {
-        if (charId === 'tori') {
+        if (charId === 'tori' || charId === 'mimi') {
             return `
             <!-- Tori Evolution: Foodie (하트 포인트 빨간 턱받이 + 빵빵한 볼 + 혀) -->
             <g class="evo-layer evo-adult_foodie" style="display:none;">
@@ -182,7 +301,7 @@ window.MangoGame = window.MangoGame || {};
                 <rect x="18" y="9" width="2" height="1" fill="#222222"/>
                 <rect x="21" y="11" width="1" height="2" fill="#74b9ff"/>
             </g>
-            <!-- Tori Evolution: Balanced (황금 헤일로 + 황금 방울 목걸이 + 별빛 오라) -->
+            <!-- Tori/Mimi Evolution: Balanced (황금 헤일로 + 황금 방울 목걸이 + 별빛 오라) -->
             <g class="evo-layer evo-adult_balanced" style="display:none;">
                 <rect x="12" y="-1" width="6" height="1" fill="#ffd32a"/>
                 <rect x="11" y="0" width="1" height="1" fill="#ff9f1a"/>
@@ -194,6 +313,23 @@ window.MangoGame = window.MangoGame || {};
                 <rect x="21" y="3" width="1" height="3" fill="#ffd32a"/>
                 <rect x="20" y="4" width="3" height="1" fill="#ffd32a"/>
                 <rect x="21" y="15" width="1" height="1" fill="#ff9f1a"/>
+            </g>
+            <!-- Tori/Mimi Evolution: Royal (보석 황금 왕관 + 왕실 레드 망토 + 하트 별빛) -->
+            <g class="evo-layer evo-adult_royal" style="display:none;">
+                <rect x="12" y="-1" width="6" height="3" fill="#ffd32a"/>
+                <rect x="12" y="-2" width="1" height="1" fill="#ffd32a"/>
+                <rect x="14" y="-2" width="2" height="1" fill="#ffd32a"/>
+                <rect x="17" y="-2" width="1" height="1" fill="#ffd32a"/>
+                <rect x="14" y="0" width="2" height="1" fill="#ff4757"/>
+                <rect x="12" y="0" width="1" height="1" fill="#70a1ff"/>
+                <rect x="17" y="0" width="1" height="1" fill="#70a1ff"/>
+                <rect x="5" y="12" width="8" height="5" fill="#d63031"/>
+                <rect x="5" y="17" width="8" height="1" fill="#fff5d6"/>
+                <rect x="12" y="13" width="3" height="1" fill="#ffd32a"/>
+                <rect x="3" y="4" width="1" height="3" fill="#ff85a2"/>
+                <rect x="2" y="5" width="3" height="1" fill="#ff85a2"/>
+                <rect x="21" y="2" width="1" height="3" fill="#ffd32a"/>
+                <rect x="20" y="3" width="3" height="1" fill="#ffd32a"/>
             </g>
             `;
         }
@@ -240,6 +376,23 @@ window.MangoGame = window.MangoGame || {};
                 <rect x="21" y="3" width="1" height="3" fill="#ffd32a"/>
                 <rect x="20" y="4" width="3" height="1" fill="#ffd32a"/>
                 <rect x="21" y="15" width="1" height="1" fill="#ff9f1a"/>
+            </g>
+            <!-- Mango Evolution: Royal (보석 황금 왕관 + 왕실 레드 망토 + 하트 별빛) -->
+            <g class="evo-layer evo-adult_royal" style="display:none;">
+                <rect x="12" y="-1" width="6" height="3" fill="#ffd32a"/>
+                <rect x="12" y="-2" width="1" height="1" fill="#ffd32a"/>
+                <rect x="14" y="-2" width="2" height="1" fill="#ffd32a"/>
+                <rect x="17" y="-2" width="1" height="1" fill="#ffd32a"/>
+                <rect x="14" y="0" width="2" height="1" fill="#ff4757"/>
+                <rect x="12" y="0" width="1" height="1" fill="#70a1ff"/>
+                <rect x="17" y="0" width="1" height="1" fill="#70a1ff"/>
+                <rect x="5" y="12" width="7" height="5" fill="#d63031"/>
+                <rect x="5" y="17" width="7" height="1" fill="#fff5d6"/>
+                <rect x="11" y="13" width="3" height="1" fill="#ffd32a"/>
+                <rect x="3" y="4" width="1" height="3" fill="#ff85a2"/>
+                <rect x="2" y="5" width="3" height="1" fill="#ff85a2"/>
+                <rect x="21" y="2" width="1" height="3" fill="#ffd32a"/>
+                <rect x="20" y="3" width="3" height="1" fill="#ffd32a"/>
             </g>
         `;
     }
@@ -625,25 +778,32 @@ window.MangoGame = window.MangoGame || {};
         render(svgEl, charId, options = {}) {
             if (!svgEl) return;
             const isTori = charId === 'tori';
+            const isMimi = charId === 'mimi';
             const isSleeping = Boolean(options.isSleeping);
             svgEl.classList.toggle('char-tori', isTori);
-            svgEl.classList.toggle('char-mango', !isTori);
+            svgEl.classList.toggle('char-mimi', isMimi);
+            svgEl.classList.toggle('char-mango', !isTori && !isMimi);
             svgEl.setAttribute('viewBox', '0 -3 24 26');
 
             if (isSleeping) {
-                svgEl.innerHTML = isTori ? buildToriSleepingBody() : buildMangoSleepingBody();
+                svgEl.innerHTML = isTori
+                    ? buildToriSleepingBody()
+                    : (isMimi ? buildMimiSleepingBody() : buildMangoSleepingBody());
                 return;
             }
 
-            const body = isTori ? buildToriBody() : buildMangoBody();
-            const overlays = buildOverlays(Boolean(options.withBasket), charId);
+            const body = isTori
+                ? buildToriBody()
+                : (isMimi ? buildMimiBody() : buildMangoBody());
+            const includeOverlays = options.withOverlays !== false;
+            const overlays = includeOverlays ? buildOverlays(Boolean(options.withBasket), charId) : '';
             svgEl.innerHTML = body + overlays;
         },
 
         createPreviewSvg(charId) {
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('class', 'char-preview-svg');
-            this.render(svg, charId, { withBasket: false });
+            this.render(svg, charId, { withBasket: false, withOverlays: false });
             return svg;
         },
 
