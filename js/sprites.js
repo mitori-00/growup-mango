@@ -281,6 +281,72 @@ window.MangoGame = window.MangoGame || {};
         `;
     }
 
+    function buildDefaultThemeSvg() {
+        return `
+        <svg class="theme-bg-svg" viewBox="0 0 64 74" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+            <!-- Pastel Sky Bands -->
+            <rect x="0" y="0" width="64" height="20" fill="#8ecae6"/>
+            <rect x="0" y="20" width="64" height="22" fill="#a8d8ea"/>
+            <rect x="0" y="42" width="64" height="32" fill="#cdeef9"/>
+            <!-- Pixel Sun & Rays -->
+            <rect x="48" y="7" width="8" height="8" fill="#ffd32a"/>
+            <rect x="49" y="8" width="6" height="6" fill="#fff275"/>
+            <g class="beach-sun-rays">
+                <rect x="51" y="3" width="2" height="3" fill="#ffd32a"/><rect x="51" y="16" width="2" height="3" fill="#ffd32a"/>
+                <rect x="44" y="10" width="3" height="2" fill="#ffd32a"/><rect x="57" y="10" width="3" height="2" fill="#ffd32a"/>
+                <rect x="45" y="5" width="2" height="2" fill="#ffd32a"/><rect x="57" y="5" width="2" height="2" fill="#ffd32a"/>
+                <rect x="45" y="15" width="2" height="2" fill="#ffd32a"/><rect x="57" y="15" width="2" height="2" fill="#ffd32a"/>
+            </g>
+            <!-- Fluffy Clouds -->
+            <g class="bg-cloud-slow">
+                <rect x="8" y="11" width="14" height="3" fill="#ffffff"/>
+                <rect x="11" y="10" width="8" height="1" fill="#ffffff"/>
+                <rect x="9" y="14" width="12" height="1" fill="#dff6ff"/>
+                <rect x="26" y="22" width="12" height="3" fill="#ffffff"/>
+                <rect x="28" y="21" width="8" height="1" fill="#ffffff"/>
+                <rect x="27" y="25" width="10" height="1" fill="#dff6ff"/>
+            </g>
+            <!-- Distant Rolling Hills -->
+            <rect x="0" y="61" width="28" height="13" fill="#a8e6cf"/>
+            <rect x="5" y="59" width="18" height="2" fill="#a8e6cf"/>
+            <rect x="24" y="63" width="40" height="11" fill="#88d8b0"/>
+            <rect x="34" y="60" width="24" height="3" fill="#88d8b0"/>
+            <!-- White Yard Fence -->
+            <rect x="24" y="68" width="40" height="1" fill="#ffffff"/>
+            <rect x="24" y="71" width="40" height="1" fill="#ffffff"/>
+            <rect x="28" y="66" width="2" height="8" fill="#ffffff"/><rect x="34" y="66" width="2" height="8" fill="#ffffff"/>
+            <rect x="40" y="66" width="2" height="8" fill="#ffffff"/><rect x="46" y="66" width="2" height="8" fill="#ffffff"/>
+            <rect x="52" y="66" width="2" height="8" fill="#ffffff"/><rect x="58" y="66" width="2" height="8" fill="#ffffff"/>
+            <!-- Cozy Pixel Doghouse on Left -->
+            <rect x="5" y="59" width="18" height="15" fill="#fff3d6"/>
+            <rect x="5" y="63" width="18" height="1" fill="#e6cfa8"/>
+            <rect x="5" y="68" width="18" height="1" fill="#e6cfa8"/>
+            <rect x="4" y="59" width="1" height="15" fill="#333333"/>
+            <rect x="23" y="59" width="1" height="15" fill="#333333"/>
+            <!-- Red Sloped Roof -->
+            <rect x="3" y="57" width="22" height="3" fill="#ff6b6b"/>
+            <rect x="5" y="54" width="18" height="3" fill="#ff6b6b"/>
+            <rect x="8" y="51" width="12" height="3" fill="#ff6b6b"/>
+            <rect x="11" y="49" width="6" height="2" fill="#ff6b6b"/>
+            <rect x="3" y="59" width="22" height="1" fill="#c0392b"/>
+            <rect x="11" y="48" width="6" height="1" fill="#333333"/>
+            <rect x="8" y="50" width="3" height="1" fill="#333333"/><rect x="17" y="50" width="3" height="1" fill="#333333"/>
+            <rect x="5" y="53" width="3" height="1" fill="#333333"/><rect x="20" y="53" width="3" height="1" fill="#333333"/>
+            <rect x="2" y="56" width="3" height="1" fill="#333333"/><rect x="23" y="56" width="3" height="1" fill="#333333"/>
+            <!-- Bone Nameplate -->
+            <rect x="11" y="60" width="6" height="2" fill="#ffd32a"/>
+            <rect x="12" y="60" width="4" height="1" fill="#ffffff"/>
+            <!-- Arched Doorway -->
+            <rect x="10" y="65" width="8" height="9" fill="#4a3728"/>
+            <rect x="11" y="64" width="6" height="1" fill="#4a3728"/>
+            <rect x="12" y="63" width="4" height="1" fill="#4a3728"/>
+            <!-- Little Yard Flowers -->
+            <rect x="31" y="72" width="2" height="2" fill="#ff8fab"/>
+            <rect x="44" y="72" width="2" height="2" fill="#ffd32a"/>
+            <rect x="55" y="72" width="2" height="2" fill="#ff8fab"/>
+        </svg>`;
+    }
+
     function buildSakuraThemeSvg() {
         return `
         <svg class="theme-bg-svg" viewBox="0 0 64 74" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
@@ -585,7 +651,7 @@ window.MangoGame = window.MangoGame || {};
             if (themeClass === 'theme-sakura') return buildSakuraThemeSvg();
             if (themeClass === 'theme-beach') return buildBeachThemeSvg();
             if (themeClass === 'theme-camping') return buildCampingThemeSvg();
-            return '';
+            return buildDefaultThemeSvg();
         }
     };
 })(window.MangoGame);
