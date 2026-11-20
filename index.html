@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Grow Up Mango</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="device">
+    <div class="title">GROW UP MANGO</div>
+
+    <!-- 홈 화면 -->
+    <div id="home-screen" class="screen theme-default">
+        <div class="theme-decor" id="theme-decor" aria-hidden="true"></div>
+
+        <div class="top-row">
+            <div class="level-text" id="level-display">LV.01 (BABY)</div>
+            <div class="top-actions">
+                <button type="button" class="icon-btn" id="dex-btn" title="망고 도감">📖</button>
+                <button type="button" class="icon-btn" id="sound-toggle-btn" title="효과음 켜기/끄기">🔊</button>
+                <button type="button" class="coin-shop-btn" id="coin-shop-btn" title="상점 열기">
+                    <span>🪙</span>
+                    <span id="coin-display">0</span>
+                    <span class="shop-tag">SHOP</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-bar">
+                <div class="stat-label">HUNGER</div>
+                <div class="bar-bg"><div class="bar-fill" id="hunger-bar" style="width: 70%;"></div></div>
+            </div>
+            <div class="stat-bar">
+                <div class="stat-label">HAPPY</div>
+                <div class="bar-bg"><div class="bar-fill" id="happy-bar" style="width: 70%;"></div></div>
+            </div>
+            <div class="stat-bar">
+                <div class="stat-label">FATIGUE</div>
+                <div class="bar-bg"><div class="bar-fill" id="fatigue-bar" style="width: 20%;"></div></div>
+            </div>
+            <div class="best-score-line">
+                <button type="button" class="rank-trigger" id="rank-btn" title="랭킹 보기">🏆 BEST <span id="home-best-score">0</span></button>
+                <span class="form-pill" id="home-form-name">아기 망고</span>
+            </div>
+        </div>
+
+        <div class="bubble" id="status-bubble">YUMMY!</div>
+        <div class="zzz" id="zzz-icon">Zzz...</div>
+
+        <div id="home-mango">
+            <svg id="home-mango-svg" class="mango-pixel walking" viewBox="0 -3 16 19" xmlns="http://www.w3.org/2000/svg">
+                <!-- Tail -->
+                <rect x="1" y="5" width="2" height="3" fill="#fff"/>
+                <rect x="0" y="5" width="1" height="3" fill="#000"/>
+                <rect x="3" y="5" width="1" height="3" fill="#000"/>
+                <rect x="1" y="4" width="2" height="1" fill="#000"/>
+                <rect x="1" y="8" width="2" height="1" fill="#000"/>
+                <!-- Body (Cream/Yellow) -->
+                <rect class="fur-part" x="3" y="6" width="6" height="5" fill="#f5deb3"/>
+                <rect x="3" y="5" width="6" height="1" fill="#000"/>
+                <!-- Belly (White) -->
+                <rect x="3" y="11" width="6" height="1" fill="#fff"/>
+                <!-- Legs -->
+                <rect x="3" y="12" width="2" height="2" fill="#fff"/>
+                <rect x="7" y="12" width="2" height="2" fill="#fff"/>
+                <rect x="2" y="11" width="1" height="3" fill="#000"/>
+                <rect x="5" y="11" width="1" height="3" fill="#000"/>
+                <rect x="6" y="11" width="1" height="3" fill="#000"/>
+                <rect x="9" y="11" width="1" height="3" fill="#000"/>
+                <rect x="3" y="14" width="2" height="1" fill="#000"/>
+                <rect x="7" y="14" width="2" height="1" fill="#000"/>
+                <!-- Head & Ear -->
+                <rect class="fur-part" x="7" y="2" width="2" height="2" fill="#f5deb3"/>
+                <rect x="6" y="2" width="1" height="2" fill="#000"/>
+                <rect x="9" y="2" width="1" height="1" fill="#000"/>
+                <rect x="7" y="1" width="2" height="1" fill="#000"/>
+
+                <rect class="fur-part" x="8" y="3" width="5" height="4" fill="#f5deb3"/>
+                <rect x="9" y="4" width="4" height="4" fill="#fff"/>
+                <rect x="10" y="4" width="1" height="1" fill="#000"/>
+                <rect x="13" y="5" width="1" height="1" fill="#000"/>
+                <rect x="8" y="2" width="5" height="1" fill="#000"/>
+                <rect x="13" y="3" width="1" height="2" fill="#000"/>
+                <rect x="14" y="5" width="1" height="2" fill="#000"/>
+                <rect x="13" y="7" width="1" height="1" fill="#000"/>
+                <rect x="9" y="8" width="4" height="1" fill="#000"/>
+                <!-- Cheek -->
+                <rect x="11" y="6" width="1" height="1" fill="#ffb6c1"/>
+
+                <!-- Evolution Layer: Foodie -->
+                <g class="evo-layer evo-adult_foodie" style="display:none;">
+                    <rect x="8" y="8" width="3" height="2" fill="#ff4757"/>
+                    <rect x="9" y="10" width="2" height="1" fill="#ff6b81"/>
+                    <rect x="11" y="6" width="2" height="1" fill="#ff85a2"/>
+                </g>
+                <!-- Evolution Layer: Sporty -->
+                <g class="evo-layer evo-adult_sporty" style="display:none;">
+                    <rect x="8" y="2" width="5" height="1" fill="#ff4757"/>
+                    <rect x="10" y="2" width="1" height="1" fill="#fff"/>
+                    <rect x="6" y="3" width="2" height="1" fill="#ff4757"/>
+                </g>
+                <!-- Evolution Layer: Sleepy -->
+                <g class="evo-layer evo-adult_sleepy" style="display:none;">
+                    <rect x="7" y="0" width="5" height="2" fill="#74b9ff"/>
+                    <rect x="6" y="0" width="2" height="1" fill="#74b9ff"/>
+                    <rect x="5" y="1" width="1" height="1" fill="#fff"/>
+                    <rect x="10" y="4" width="2" height="1" fill="#333"/>
+                </g>
+                <!-- Evolution Layer: Balanced -->
+                <g class="evo-layer evo-adult_balanced" style="display:none;">
+                    <rect x="10" y="-2" width="1" height="3" fill="#ffd32a"/>
+                    <rect x="9" y="-1" width="3" height="1" fill="#ffd32a"/>
+                    <rect x="3" y="3" width="1" height="1" fill="#ffeaa7"/>
+                    <rect x="14" y="2" width="1" height="1" fill="#ffeaa7"/>
+                </g>
+
+                <!-- Accessory: Ribbon -->
+                <g class="acc-layer acc-ribbon" style="display:none;">
+                    <rect x="5" y="1" width="1" height="2" fill="#ff4757"/>
+                    <rect x="6" y="1" width="1" height="1" fill="#ff6b81"/>
+                    <rect x="7" y="0" width="2" height="2" fill="#ff4757"/>
+                </g>
+                <!-- Accessory: Sunglasses -->
+                <g class="acc-layer acc-sunglasses" style="display:none;">
+                    <rect x="9" y="4" width="5" height="2" fill="#111"/>
+                    <rect x="10" y="4" width="1" height="1" fill="#70a1ff"/>
+                    <rect x="12" y="4" width="1" height="1" fill="#70a1ff"/>
+                </g>
+                <!-- Accessory: Crown -->
+                <g class="acc-layer acc-crown" style="display:none;">
+                    <rect x="8" y="-1" width="5" height="2" fill="#ffd32a"/>
+                    <rect x="8" y="-2" width="1" height="1" fill="#ffd32a"/>
+                    <rect x="10" y="-2" width="1" height="1" fill="#ffd32a"/>
+                    <rect x="12" y="-2" width="1" height="1" fill="#ffd32a"/>
+                    <rect x="10" y="0" width="1" height="1" fill="#ff3f34"/>
+                </g>
+            </svg>
+        </div>
+
+        <!-- 간식 선택 팝업 -->
+        <div class="screen-modal" id="food-modal" style="display:none;">
+            <div class="modal-header">
+                <span>🍖 FOOD & SNACKS</span>
+                <button type="button" class="modal-close" id="close-food-btn">X</button>
+            </div>
+            <div class="modal-list" id="food-list"></div>
+        </div>
+
+        <!-- 상점 팝업 -->
+        <div class="screen-modal" id="shop-modal" style="display:none;">
+            <div class="modal-header">
+                <span>🛒 MANGO SHOP</span>
+                <span class="modal-coins">🪙 <span id="shop-coin-display">0</span></span>
+                <button type="button" class="modal-close" id="close-shop-btn">X</button>
+            </div>
+            <div class="shop-tabs" id="shop-tabs">
+                <button type="button" class="shop-tab active" data-tab="snack">간식</button>
+                <button type="button" class="shop-tab" data-tab="accessory">꾸미기</button>
+                <button type="button" class="shop-tab" data-tab="theme">배경</button>
+            </div>
+            <div class="modal-list" id="shop-list"></div>
+        </div>
+
+        <!-- 망고 도감 팝업 -->
+        <div class="screen-modal" id="dex-modal" style="display:none;">
+            <div class="modal-header">
+                <span>📖 MANGO DEX</span>
+                <span class="modal-coins" id="dex-count-display">1/6</span>
+                <button type="button" class="modal-close" id="close-dex-btn">X</button>
+            </div>
+            <div class="dex-care-summary" id="dex-care-summary"></div>
+            <div class="modal-list" id="dex-list"></div>
+            <div class="dex-footer" id="dex-footer" style="display:none;">
+                <button type="button" class="mini-action-btn primary" id="rebirth-btn">🥚 새 망고 키우기 (코인·도감 유지)</button>
+            </div>
+        </div>
+
+        <!-- 미니게임 랭킹 및 닉네임 팝업 -->
+        <div class="screen-modal" id="rank-modal" style="display:none;">
+            <div class="modal-header">
+                <span>🏆 RANKING</span>
+                <span class="modal-coins" id="sync-badge">LOCAL</span>
+                <button type="button" class="modal-close" id="close-rank-btn">X</button>
+            </div>
+            <div class="nickname-row">
+                <input type="text" id="nickname-input" class="nickname-input" maxlength="12" placeholder="닉네임 입력">
+                <button type="button" class="item-btn" id="save-nickname-btn">저장</button>
+            </div>
+            <div class="modal-list" id="rank-list"></div>
+        </div>
+
+        <div class="ground"></div>
+    </div>
+
+    <!-- 미니게임 화면 -->
+    <div id="game-screen" class="screen theme-default">
+        <div class="game-hud">
+            <div class="hud-left">
+                <div class="score-board" id="score-display">SCORE 0000</div>
+                <div class="combo-badge" id="combo-badge"></div>
+            </div>
+            <div class="hud-right">
+                <div class="time-board" id="time-display">60s</div>
+                <div class="hearts-board" id="hearts-display">❤️❤️❤️</div>
+            </div>
+        </div>
+
+        <div class="game-guide" id="game-guide">
+            CATCH BALLS!<br>
+            60s / ❤️❤️❤️<br><br>
+            PRESS [PLAY/STOP]<br>TO START
+        </div>
+
+        <!-- 미니게임 결과 모달 -->
+        <div class="screen-modal game-result-modal" id="game-result" style="display:none;">
+            <div class="result-title" id="result-title">TIME UP!</div>
+            <div class="result-details" id="result-details"></div>
+            <div class="result-actions">
+                <button type="button" class="mini-action-btn primary" id="result-replay-btn">RETRY</button>
+                <button type="button" class="mini-action-btn" id="result-home-btn">HOME</button>
+            </div>
+        </div>
+
+        <div id="game-mango">
+            <svg id="game-mango-svg" class="mango-pixel" viewBox="0 -3 16 19" xmlns="http://www.w3.org/2000/svg">
+                <!-- Basket on Head -->
+                <rect x="9" y="0" width="4" height="2" fill="#8b4513"/>
+                <rect x="8" y="0" width="1" height="2" fill="#000"/>
+                <rect x="13" y="0" width="1" height="2" fill="#000"/>
+                <rect x="9" y="-1" width="4" height="1" fill="#000"/>
+
+                <!-- Tail -->
+                <rect x="1" y="5" width="2" height="3" fill="#fff"/>
+                <rect x="0" y="5" width="1" height="3" fill="#000"/>
+                <rect x="3" y="5" width="1" height="3" fill="#000"/>
+                <rect x="1" y="4" width="2" height="1" fill="#000"/>
+                <rect x="1" y="8" width="2" height="1" fill="#000"/>
+                <!-- Body (Cream/Yellow) -->
+                <rect class="fur-part" x="3" y="6" width="6" height="5" fill="#f5deb3"/>
+                <rect x="3" y="5" width="6" height="1" fill="#000"/>
+                <!-- Belly (White) -->
+                <rect x="3" y="11" width="6" height="1" fill="#fff"/>
+                <!-- Legs -->
+                <rect x="3" y="12" width="2" height="2" fill="#fff"/>
+                <rect x="7" y="12" width="2" height="2" fill="#fff"/>
+                <rect x="2" y="11" width="1" height="3" fill="#000"/>
+                <rect x="5" y="11" width="1" height="3" fill="#000"/>
+                <rect x="6" y="11" width="1" height="3" fill="#000"/>
+                <rect x="9" y="11" width="1" height="3" fill="#000"/>
+                <rect x="3" y="14" width="2" height="1" fill="#000"/>
+                <rect x="7" y="14" width="2" height="1" fill="#000"/>
+                <!-- Head & Ear -->
+                <rect class="fur-part" x="7" y="2" width="2" height="2" fill="#f5deb3"/>
+                <rect x="6" y="2" width="1" height="2" fill="#000"/>
+                <rect x="7" y="1" width="2" height="1" fill="#000"/>
+
+                <rect class="fur-part" x="8" y="3" width="5" height="4" fill="#f5deb3"/>
+                <rect x="9" y="4" width="4" height="4" fill="#fff"/>
+                <rect x="10" y="4" width="1" height="1" fill="#000"/>
+                <rect x="13" y="5" width="1" height="1" fill="#000"/>
+                <rect x="14" y="5" width="1" height="2" fill="#000"/>
+                <rect x="13" y="7" width="1" height="1" fill="#000"/>
+                <rect x="9" y="8" width="4" height="1" fill="#000"/>
+                <!-- Cheek -->
+                <rect x="11" y="6" width="1" height="1" fill="#ffb6c1"/>
+
+                <!-- Evolution Layers -->
+                <g class="evo-layer evo-adult_foodie" style="display:none;">
+                    <rect x="8" y="8" width="3" height="2" fill="#ff4757"/>
+                    <rect x="9" y="10" width="2" height="1" fill="#ff6b81"/>
+                    <rect x="11" y="6" width="2" height="1" fill="#ff85a2"/>
+                </g>
+                <g class="evo-layer evo-adult_sporty" style="display:none;">
+                    <rect x="8" y="2" width="5" height="1" fill="#ff4757"/>
+                    <rect x="10" y="2" width="1" height="1" fill="#fff"/>
+                    <rect x="6" y="3" width="2" height="1" fill="#ff4757"/>
+                </g>
+                <g class="evo-layer evo-adult_sleepy" style="display:none;">
+                    <rect x="10" y="4" width="2" height="1" fill="#333"/>
+                </g>
+                <g class="evo-layer evo-adult_balanced" style="display:none;">
+                    <rect x="3" y="3" width="1" height="1" fill="#ffeaa7"/>
+                    <rect x="14" y="2" width="1" height="1" fill="#ffeaa7"/>
+                </g>
+
+                <!-- Accessory: Ribbon -->
+                <g class="acc-layer acc-ribbon" style="display:none;">
+                    <rect x="5" y="1" width="1" height="2" fill="#ff4757"/>
+                    <rect x="6" y="1" width="1" height="1" fill="#ff6b81"/>
+                    <rect x="7" y="0" width="2" height="2" fill="#ff4757"/>
+                </g>
+                <!-- Accessory: Sunglasses -->
+                <g class="acc-layer acc-sunglasses" style="display:none;">
+                    <rect x="9" y="4" width="5" height="2" fill="#111"/>
+                    <rect x="10" y="4" width="1" height="1" fill="#70a1ff"/>
+                    <rect x="12" y="4" width="1" height="1" fill="#70a1ff"/>
+                </g>
+                <!-- Accessory: Crown -->
+                <g class="acc-layer acc-crown" style="display:none;">
+                    <rect x="8" y="-2" width="5" height="1" fill="#ffd32a"/>
+                    <rect x="8" y="-3" width="1" height="1" fill="#ffd32a"/>
+                    <rect x="10" y="-3" width="1" height="1" fill="#ffd32a"/>
+                    <rect x="12" y="-3" width="1" height="1" fill="#ffd32a"/>
+                </g>
+            </svg>
+        </div>
+        <div class="ground"></div>
+    </div>
+
+    <!-- 홈 버튼 -->
+    <div class="buttons" id="home-buttons">
+        <div class="btn btn-food" id="btn-food">
+            <div class="btn-icon">🍖</div>
+            <div>FOOD</div>
+        </div>
+        <div class="btn btn-play" id="btn-play">
+            <div class="btn-icon">⚽</div>
+            <div>PLAY</div>
+        </div>
+        <div class="btn btn-sleep" id="btn-sleep">
+            <div class="btn-icon">💤</div>
+            <div>SLEEP</div>
+        </div>
+        <div class="btn btn-outside" id="btn-outside">
+            <div class="btn-icon">🌳</div>
+            <div>OUTSIDE</div>
+        </div>
+    </div>
+
+    <!-- 미니게임 버튼 -->
+    <div class="buttons" id="game-buttons" style="display:none;">
+        <div class="btn btn-food" id="btn-left">
+            <div class="btn-icon">&lt;</div>
+        </div>
+        <div class="btn btn-play" id="btn-right">
+            <div class="btn-icon">&gt;</div>
+        </div>
+        <div class="btn btn-sleep" id="btn-toggle-game">
+            <div>PLAY<br>STOP</div>
+        </div>
+        <div class="btn btn-outside" id="btn-go-home">
+            <div class="btn-icon">🏠</div>
+            <div>GO HOME</div>
+        </div>
+    </div>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="js/data.js"></script>
+<script defer src="js/sound.js"></script>
+<script defer src="js/supabase-config.js"></script>
+<script defer src="js/storage.js"></script>
+<script defer src="js/minigame.js"></script>
+<script defer src="js/app.js"></script>
+</body>
+</html>
