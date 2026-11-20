@@ -13,6 +13,7 @@ window.MangoGame = window.MangoGame || {};
             this.resultEl = options.resultEl;
             this.resultTitleEl = options.resultTitleEl;
             this.resultDetailsEl = options.resultDetailsEl;
+            this.getCharacterId = options.getCharacterId || (() => 'mango');
             this.onStatGain = options.onStatGain;
             this.onComplete = options.onComplete;
 
@@ -51,9 +52,21 @@ window.MangoGame = window.MangoGame || {};
             this.playerX = Math.max(8, (this.screenEl.clientWidth - 52) / 2);
             this.mangoEl.style.left = `${this.playerX}px`;
 
-            this.guideEl.innerHTML = 'CATCH BALLS!<br>60s / ❤️❤️❤️<br><br>PRESS [PLAY/STOP]<br>TO START';
+            const items = this.getCharacterItems();
+            this.guideEl.innerHTML = `
+                CATCH GAME!<br>
+                ${items.tier1.emoji} +${items.tier1.points} · ${items.tier2.emoji} +${items.tier2.points} · ${items.tier3.emoji} +${items.tier3.points}<br>
+                💣 AVOID! / 60s ❤️❤️❤️<br><br>
+                PRESS [PLAY / STOP]<br>TO START
+            `;
             this.guideEl.style.display = 'block';
             this.renderHud();
+        }
+
+        getCharacterItems() {
+            const charId = this.getCharacterId();
+            const table = ns.MINIGAME_ITEMS || {};
+            return table[charId] || table.mango;
         }
 
         toggle() {
@@ -194,26 +207,33 @@ window.MangoGame = window.MangoGame || {};
 
         spawnItem(phase) {
             const rand = Math.random();
-            let type = 'ball';
-            let emoji = '🎾';
+            const charItems = this.getCharacterItems();
+            const goldChance = phase.isFever ? 0.14 : 0.04;
+            let type = 'tier3';
+            let meta = charItems.tier3;
+            let emoji = meta.emoji;
             let baseSpeed = 135 + Math.min(90, this.score * 0.2);
 
-            if (phase.isFever && rand < 0.14) {
+            if (rand < goldChance) {
                 type = 'gold';
+                meta = null;
                 emoji = '🪙';
                 baseSpeed += 25;
-            } else if (!phase.isFever && rand < 0.04) {
-                type = 'gold';
-                emoji = '🪙';
-                baseSpeed += 25;
-            } else if (rand < 0.24) {
+            } else if (rand < goldChance + 0.20) {
                 type = 'bomb';
+                meta = null;
                 emoji = '💣';
                 baseSpeed += 20;
-            } else if (rand < 0.44) {
-                type = 'bone';
-                emoji = '🦴';
-                baseSpeed += 10;
+            } else if (rand < goldChance + 0.34) {
+                type = 'tier1';
+                meta = charItems.tier1;
+                emoji = meta.emoji;
+                baseSpeed += meta.speedBonus;
+            } else if (rand < goldChance + 0.58) {
+                type = 'tier2';
+                meta = charItems.tier2;
+                emoji = meta.emoji;
+                baseSpeed += meta.speedBonus;
             }
 
             const el = document.createElement('div');
@@ -224,7 +244,7 @@ window.MangoGame = window.MangoGame || {};
             el.style.top = '34px';
             this.screenEl.appendChild(el);
 
-            this.items.push({ el, x, y: 34, speed: baseSpeed * phase.speedMult, type });
+            this.items.push({ el, x, y: 34, speed: baseSpeed * phase.speedMult, type, meta });
         }
 
         handleCatch(it, phase, now) {
@@ -252,19 +272,18 @@ window.MangoGame = window.MangoGame || {};
                 this.bonusCoins += 5;
                 if (ns.Sound) ns.Sound.playCatchGold();
                 this.spawnFloatText(`+${pts} 🪙+5`, it.x, it.y, 'gold');
-            } else if (it.type === 'bone') {
-                const pts = Math.round(25 * mult);
-                this.score += pts;
-                this.onStatGain({ happy: 3, exp: 10 });
-                if (ns.Sound) ns.Sound.playCatchBone();
-                this.spawnFloatText(`+${pts}`, it.x, it.y, 'gold');
-            } else {
-                const pts = Math.round(10 * mult);
-                this.score += pts;
-                this.onStatGain({ happy: 1, exp: 4 });
-                if (ns.Sound) ns.Sound.playCatchBall();
-                this.spawnFloatText(`+${pts}`, it.x, it.y, '');
+                return;
             }
+
+            const meta = it.meta || this.getCharacterItems().tier3;
+            const pts = Math.round(meta.points * mult);
+            this.score += pts;
+            this.onStatGain({ happy: meta.happy, exp: meta.exp });
+            if (ns.Sound) {
+                if (it.type === 'tier1' || it.type === 'tier2') ns.Sound.playCatchBone();
+                else ns.Sound.playCatchBall();
+            }
+            this.spawnFloatText(`+${pts}`, it.x, it.y, meta.style || '');
         }
 
         spawnFloatText(text, x, y, styleClass) {

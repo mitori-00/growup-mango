@@ -9,43 +9,60 @@
 <body>
 
 <div class="device">
-    <div class="title" id="device-title">GROW UP MANGO</div>
+    <div class="device-header">
+        <div class="bezel-slot bezel-left">
+            <button type="button" class="bezel-btn" id="btn-go-home" title="홈으로 돌아가기" style="display:none;">🏠</button>
+        </div>
+        <div class="title" id="device-title">GROW UP MANGO</div>
+        <div class="bezel-slot bezel-right">
+            <button type="button" class="bezel-btn" id="sound-toggle-btn" title="효과음 켜기/끄기">🔊</button>
+        </div>
+    </div>
 
     <!-- 홈 화면 -->
     <div id="home-screen" class="screen theme-default">
         <div class="theme-decor" id="theme-decor" aria-hidden="true"></div>
 
         <div class="top-row">
-            <div class="level-text" id="level-display">LV.01 (BABY)</div>
-            <div class="top-actions">
-                <button type="button" class="icon-btn" id="char-btn" title="캐릭터 선택 (망고/토리)">🐾</button>
-                <button type="button" class="icon-btn" id="dex-btn" title="도감">📖</button>
-                <button type="button" class="icon-btn" id="sound-toggle-btn" title="효과음 켜기/끄기">🔊</button>
-                <button type="button" class="coin-shop-btn" id="coin-shop-btn" title="상점 열기">
-                    <span>🪙</span>
-                    <span id="coin-display">0</span>
-                    <span class="shop-tag">SHOP</span>
-                </button>
+            <div class="level-pill">
+                <span class="level-text" id="level-display">LV.01 (BABY)</span>
+                <span class="form-pill" id="home-form-name">🐶 아기 망고</span>
+            </div>
+            <button type="button" class="coin-shop-btn" id="coin-shop-btn" title="상점 열기">
+                <span>🪙</span>
+                <span id="coin-display">0</span>
+                <span class="shop-tag">SHOP</span>
+            </button>
+        </div>
+
+        <div class="stats-card">
+            <div class="stat-col">
+                <div class="stat-label">HUNGER</div>
+                <div class="bar-bg"><div class="bar-fill bar-hunger" id="hunger-bar" style="width: 70%;"></div></div>
+            </div>
+            <div class="stat-col">
+                <div class="stat-label">HAPPY</div>
+                <div class="bar-bg"><div class="bar-fill bar-happy" id="happy-bar" style="width: 70%;"></div></div>
+            </div>
+            <div class="stat-col">
+                <div class="stat-label">FATIGUE</div>
+                <div class="bar-bg"><div class="bar-fill bar-fatigue" id="fatigue-bar" style="width: 20%;"></div></div>
             </div>
         </div>
 
-        <div class="stats">
-            <div class="stat-bar">
-                <div class="stat-label">HUNGER</div>
-                <div class="bar-bg"><div class="bar-fill" id="hunger-bar" style="width: 70%;"></div></div>
-            </div>
-            <div class="stat-bar">
-                <div class="stat-label">HAPPY</div>
-                <div class="bar-bg"><div class="bar-fill" id="happy-bar" style="width: 70%;"></div></div>
-            </div>
-            <div class="stat-bar">
-                <div class="stat-label">FATIGUE</div>
-                <div class="bar-bg"><div class="bar-fill" id="fatigue-bar" style="width: 20%;"></div></div>
-            </div>
-            <div class="best-score-line">
-                <button type="button" class="rank-trigger" id="rank-btn" title="랭킹 보기">🏆 BEST <span id="home-best-score">0</span></button>
-                <span class="form-pill" id="home-form-name">🐶 아기 망고</span>
-            </div>
+        <div class="quick-dock" aria-label="빠른 메뉴">
+            <button type="button" class="dock-btn dock-pet" id="char-btn" title="캐릭터 선택 (망고/토리)">
+                <span class="dock-icon">🐾</span>
+                <span class="dock-label">캐릭터</span>
+            </button>
+            <button type="button" class="dock-btn" id="dex-btn" title="도감">
+                <span class="dock-icon">📖</span>
+                <span class="dock-label">도감</span>
+            </button>
+            <button type="button" class="dock-btn" id="rank-btn" title="랭킹 보기">
+                <span class="dock-icon">🏆</span>
+                <span class="dock-label" id="home-best-score">0</span>
+            </button>
         </div>
 
         <div class="bubble" id="status-bubble">YUMMY!</div>
@@ -59,7 +76,7 @@
         <div class="screen-modal" id="food-modal" style="display:none;">
             <div class="modal-header">
                 <span>🍖 FOOD &amp; SNACKS</span>
-                <button type="button" class="modal-close" id="close-food-btn">X</button>
+                <button type="button" class="modal-close" id="close-food-btn">✕</button>
             </div>
             <div class="modal-list" id="food-list"></div>
         </div>
@@ -69,7 +86,7 @@
             <div class="modal-header">
                 <span>🛒 PET SHOP</span>
                 <span class="modal-coins">🪙 <span id="shop-coin-display">0</span></span>
-                <button type="button" class="modal-close" id="close-shop-btn">X</button>
+                <button type="button" class="modal-close" id="close-shop-btn">✕</button>
             </div>
             <div class="shop-tabs" id="shop-tabs">
                 <button type="button" class="shop-tab active" data-tab="snack">간식</button>
@@ -83,9 +100,18 @@
         <div class="screen-modal" id="char-modal" style="display:none;">
             <div class="modal-header">
                 <span>🐾 CHARACTER</span>
-                <button type="button" class="modal-close" id="close-char-btn">X</button>
+                <button type="button" class="modal-close" id="close-char-btn">✕</button>
             </div>
-            <div class="modal-list" id="char-list"></div>
+            <div class="modal-list char-grid" id="char-list"></div>
+        </div>
+
+        <!-- 최초 진입 강아지 선택 온보딩 -->
+        <div class="screen-modal onboarding-modal" id="onboarding-modal" style="display:none;">
+            <div class="modal-header onboarding-header">
+                <span>🐾 함께 키울 강아지 선택</span>
+            </div>
+            <div class="onboarding-sub">선택한 강아지는 다음 접속에도 그대로 유지돼요!</div>
+            <div class="modal-list char-grid" id="onboarding-list"></div>
         </div>
 
         <!-- 도감 팝업 -->
@@ -93,7 +119,7 @@
             <div class="modal-header">
                 <span>📖 PET DEX</span>
                 <span class="modal-coins" id="dex-count-display">1/6</span>
-                <button type="button" class="modal-close" id="close-dex-btn">X</button>
+                <button type="button" class="modal-close" id="close-dex-btn">✕</button>
             </div>
             <div class="dex-care-summary" id="dex-care-summary"></div>
             <div class="modal-list" id="dex-list"></div>
@@ -107,7 +133,7 @@
             <div class="modal-header">
                 <span>🏆 RANKING</span>
                 <span class="modal-coins" id="sync-badge">LOCAL</span>
-                <button type="button" class="modal-close" id="close-rank-btn">X</button>
+                <button type="button" class="modal-close" id="close-rank-btn">✕</button>
             </div>
             <div class="nickname-row">
                 <input type="text" id="nickname-input" class="nickname-input" maxlength="12" placeholder="닉네임 입력">
@@ -121,13 +147,16 @@
 
     <!-- 미니게임 화면 -->
     <div id="game-screen" class="screen theme-default">
+        <div class="theme-decor" id="game-theme-decor" aria-hidden="true"></div>
         <div class="game-hud">
             <div class="hud-left">
                 <div class="score-board" id="score-display">SCORE 0000</div>
                 <div class="combo-badge" id="combo-badge"></div>
             </div>
-            <div class="hud-right">
+            <div class="hud-center">
                 <div class="time-board" id="time-display">60s</div>
+            </div>
+            <div class="hud-right">
                 <div class="hearts-board" id="hearts-display">❤️❤️❤️</div>
             </div>
         </div>
@@ -135,7 +164,7 @@
         <div class="game-guide" id="game-guide">
             CATCH BALLS!<br>
             60s / ❤️❤️❤️<br><br>
-            PRESS [PLAY/STOP]<br>TO START
+            PRESS [PLAY / STOP]<br>TO START
         </div>
 
         <!-- 미니게임 결과 모달 -->
@@ -174,20 +203,18 @@
         </div>
     </div>
 
-    <!-- 미니게임 버튼 -->
-    <div class="buttons" id="game-buttons" style="display:none;">
-        <div class="btn btn-food" id="btn-left">
-            <div class="btn-icon">&lt;</div>
+    <!-- 미니게임 버튼 (엄지 최적화 2단 조작부) -->
+    <div class="buttons game-controls" id="game-buttons" style="display:none;">
+        <div class="game-move-row">
+            <div class="btn btn-food game-pad" id="btn-left">
+                <div class="btn-icon">◀</div>
+            </div>
+            <div class="btn btn-play game-pad" id="btn-right">
+                <div class="btn-icon">▶</div>
+            </div>
         </div>
-        <div class="btn btn-play" id="btn-right">
-            <div class="btn-icon">&gt;</div>
-        </div>
-        <div class="btn btn-sleep" id="btn-toggle-game">
-            <div>PLAY<br>STOP</div>
-        </div>
-        <div class="btn btn-outside" id="btn-go-home">
-            <div class="btn-icon">🏠</div>
-            <div>GO HOME</div>
+        <div class="btn btn-sleep game-pause-btn" id="btn-toggle-game">
+            <div>▶ PLAY / ⏸ STOP</div>
         </div>
     </div>
 </div>

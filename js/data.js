@@ -21,6 +21,7 @@ window.MangoGame.CHARACTERS = [
 
 window.MangoGame.DEFAULT_STATE = {
     character: 'mango',
+    hasSelectedCharacter: false,
     level: 1,
     exp: 0,
     hunger: 70,
@@ -104,6 +105,20 @@ window.MangoGame.MINIGAME_CONFIG = {
     survivalBonusCoins: 15,
     perfectBonusCoins: 25,
     newRecordBonusCoins: 20
+};
+
+// 캐릭터별 캐치볼 낙하 아이템 (1순위 > 2순위 > 3순위, 폭탄은 공통 유지)
+window.MangoGame.MINIGAME_ITEMS = {
+    mango: {
+        tier1: { emoji: '🥐', label: '빵', points: 30, happy: 4, exp: 12, speedBonus: 18, style: 'gold' },
+        tier2: { emoji: '🥭', label: '과일', points: 20, happy: 3, exp: 8, speedBonus: 10, style: 'gold' },
+        tier3: { emoji: '🎾', label: '공', points: 10, happy: 1, exp: 4, speedBonus: 0, style: '' }
+    },
+    tori: {
+        tier1: { emoji: '🥩', label: '고기', points: 30, happy: 4, exp: 12, speedBonus: 18, style: 'gold' },
+        tier2: { emoji: '🍳', label: '계란', points: 20, happy: 3, exp: 8, speedBonus: 10, style: 'gold' },
+        tier3: { emoji: '🧸', label: '장난감', points: 10, happy: 1, exp: 4, speedBonus: 0, style: '' }
+    }
 };
 
 window.MangoGame.SHOP_ITEMS = [

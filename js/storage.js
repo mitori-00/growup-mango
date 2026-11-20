@@ -12,15 +12,20 @@ window.MangoGame = window.MangoGame || {};
 
     function normalizeState(rawState) {
         const base = JSON.parse(JSON.stringify(ns.DEFAULT_STATE));
-        const parsed = rawState || {};
+        const hasRaw = Boolean(rawState && typeof rawState === 'object');
+        const parsed = hasRaw ? rawState : {};
         const unlocked = Array.isArray(parsed.unlockedDex)
             ? Array.from(new Set(['baby', ...parsed.unlockedDex]))
             : ['baby'];
+        const hasSelectedCharacter = hasRaw
+            ? (typeof parsed.hasSelectedCharacter === 'boolean' ? parsed.hasSelectedCharacter : true)
+            : false;
 
         return {
             ...base,
             ...parsed,
             character: parsed.character === 'tori' ? 'tori' : 'mango',
+            hasSelectedCharacter,
             nickname: parsed.nickname || '망고집사',
             careStats: { ...base.careStats, ...(parsed.careStats || {}) },
             unlockedDex: unlocked,
@@ -46,7 +51,8 @@ window.MangoGame = window.MangoGame || {};
                 feed: (state.careStats && state.careStats.feed) || 0,
                 play: (state.careStats && state.careStats.play) || 0,
                 sleep: (state.careStats && state.careStats.sleep) || 0,
-                character: state.character || 'mango'
+                character: state.character || 'mango',
+                hasSelectedCharacter: Boolean(state.hasSelectedCharacter)
             },
             adult_form: state.adultForm || null,
             unlocked_dex: state.unlockedDex || ['baby'],
@@ -60,6 +66,7 @@ window.MangoGame = window.MangoGame || {};
         const cs = row.care_stats || {};
         return normalizeState({
             character: cs.character || 'mango',
+            hasSelectedCharacter: typeof cs.hasSelectedCharacter === 'boolean' ? cs.hasSelectedCharacter : true,
             nickname: row.nickname,
             level: row.level,
             exp: row.exp,
@@ -180,8 +187,10 @@ window.MangoGame = window.MangoGame || {};
                     return { connected: true, state: cloudState };
                 }
 
-                // 최초 접속 시 현재 로컬 상태를 클라우드에 등록
-                await pushToCloud(localState);
+                // 최초 접속 시 캐릭터 선택이 완료된 경우에만 클라우드에 등록
+                if (localState && localState.hasSelectedCharacter) {
+                    await pushToCloud(localState);
+                }
                 return { connected: true, state: localState };
             } catch (e) {
                 return { connected: false, state: localState };

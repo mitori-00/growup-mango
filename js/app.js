@@ -5,6 +5,7 @@ window.MangoGame = window.MangoGame || {};
     let isHome = true;
     let activeShopTab = 'snack';
     let renderedCharId = null;
+    let renderedSleeping = null;
 
     // DOM 요소
     const deviceTitle = document.getElementById('device-title');
@@ -35,6 +36,8 @@ window.MangoGame = window.MangoGame || {};
     const shopList = document.getElementById('shop-list');
     const charModal = document.getElementById('char-modal');
     const charList = document.getElementById('char-list');
+    const onboardingModal = document.getElementById('onboarding-modal');
+    const onboardingList = document.getElementById('onboarding-list');
     const dexModal = document.getElementById('dex-modal');
     const dexList = document.getElementById('dex-list');
     const dexCountDisplay = document.getElementById('dex-count-display');
@@ -153,10 +156,14 @@ window.MangoGame = window.MangoGame || {};
 
     function syncCharacterSprites() {
         const char = getCurrentCharacter();
-        if (renderedCharId !== char.id && ns.Sprites) {
-            ns.Sprites.render(homeMangoSvg, char.id, { withBasket: false });
-            ns.Sprites.render(gameMangoSvg, char.id, { withBasket: true });
+        const isSleeping = Boolean(state.isSleeping);
+        if ((renderedCharId !== char.id || renderedSleeping !== isSleeping) && ns.Sprites) {
+            ns.Sprites.render(homeMangoSvg, char.id, { withBasket: false, isSleeping });
+            if (renderedCharId !== char.id) {
+                ns.Sprites.render(gameMangoSvg, char.id, { withBasket: true, isSleeping: false });
+            }
             renderedCharId = char.id;
+            renderedSleeping = isSleeping;
         }
         if (deviceTitle) {
             deviceTitle.textContent = char.title;
@@ -165,44 +172,18 @@ window.MangoGame = window.MangoGame || {};
 
     function applyTheme() {
         const themeClasses = ['theme-default', 'theme-sakura', 'theme-beach', 'theme-camping'];
+        const activeTheme = state.equippedTheme || 'theme-default';
         [homeScreen, gameScreen].forEach((el) => {
             el.classList.remove(...themeClasses);
-            el.classList.add(state.equippedTheme || 'theme-default');
+            el.classList.add(activeTheme);
         });
 
-        themeDecor.innerHTML = '';
-        if (state.equippedTheme === 'theme-sakura') {
-            ['🌸', '🌸', '💮'].forEach((icon, i) => {
-                const span = document.createElement('span');
-                span.className = 'decor-dot';
-                span.textContent = icon;
-                span.style.top = `${110 + i * 48}px`;
-                span.style.left = `${22 + i * 95}px`;
-                themeDecor.appendChild(span);
-            });
-        } else if (state.equippedTheme === 'theme-beach') {
-            const sun = document.createElement('span');
-            sun.className = 'decor-dot';
-            sun.textContent = '☀️';
-            sun.style.top = '106px';
-            sun.style.right = '18px';
-            themeDecor.appendChild(sun);
-        } else if (state.equippedTheme === 'theme-camping') {
-            ['✨', '⭐', '✨'].forEach((icon, i) => {
-                const span = document.createElement('span');
-                span.className = 'decor-dot';
-                span.textContent = icon;
-                span.style.top = `${102 + i * 32}px`;
-                span.style.left = `${28 + i * 98}px`;
-                themeDecor.appendChild(span);
-            });
-            const fire = document.createElement('span');
-            fire.className = 'decor-dot';
-            fire.textContent = '🔥';
-            fire.style.bottom = '24px';
-            fire.style.right = '16px';
-            themeDecor.appendChild(fire);
-        }
+        const themeSvg = ns.Sprites && ns.Sprites.buildThemeSvg
+            ? ns.Sprites.buildThemeSvg(activeTheme)
+            : '';
+        const gameThemeDecor = document.getElementById('game-theme-decor');
+        if (themeDecor) themeDecor.innerHTML = themeSvg;
+        if (gameThemeDecor) gameThemeDecor.innerHTML = themeSvg;
     }
 
     function applyEvolutionVisual(formId) {
@@ -270,6 +251,7 @@ window.MangoGame = window.MangoGame || {};
         homeScreen.classList.toggle('sleeping', state.isSleeping);
         zzzIcon.style.display = state.isSleeping ? 'block' : 'none';
         homeMangoSvg.classList.toggle('walking', !state.isSleeping);
+        homeMangoSvg.classList.toggle('sleeping-breath', state.isSleeping);
 
         applyTheme();
         applyEvolutionVisual(formId);
@@ -308,7 +290,7 @@ window.MangoGame = window.MangoGame || {};
             info.className = 'item-info';
             info.style.flex = '1';
             info.innerHTML = `
-                <div class="item-name">${char.name} (${char.breed})</div>
+                <div class="item-name">${char.name}</div>
                 <div class="item-desc">${char.desc}</div>
             `;
 
@@ -320,6 +302,7 @@ window.MangoGame = window.MangoGame || {};
             btn.addEventListener('click', () => {
                 if (ns.Sound) ns.Sound.playLevelUp();
                 state.character = char.id;
+                state.hasSelectedCharacter = true;
                 closeAllModals();
                 showBubble(`${char.name} 안녕! 🐾`);
                 updateUI();
@@ -331,6 +314,55 @@ window.MangoGame = window.MangoGame || {};
             card.appendChild(btn);
             charList.appendChild(card);
         });
+    }
+
+    // 최초 진입 강아지 선택 온보딩 모달
+    function openOnboardingModal() {
+        if (!onboardingModal || !onboardingList) return;
+        closeAllModals();
+        onboardingList.innerHTML = '';
+        ns.CHARACTERS.forEach((char) => {
+            const card = document.createElement('div');
+            card.className = 'char-card';
+
+            const previewBox = document.createElement('div');
+            previewBox.className = 'char-preview-box';
+            if (ns.Sprites) {
+                previewBox.appendChild(ns.Sprites.createPreviewSvg(char.id));
+            }
+
+            const info = document.createElement('div');
+            info.className = 'item-info';
+            info.style.flex = '1';
+            info.innerHTML = `
+                <div class="item-name">${char.name}</div>
+                <div class="item-desc">${char.desc}</div>
+            `;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'item-btn';
+            btn.textContent = `${char.name} 선택`;
+            btn.addEventListener('click', () => {
+                if (ns.Sound) ns.Sound.playLevelUp();
+                state.character = char.id;
+                state.hasSelectedCharacter = true;
+                onboardingModal.style.display = 'none';
+                showBubble(`${char.name}와 함께 시작! 🐾`);
+                updateUI();
+                save(true);
+            });
+
+            card.appendChild(previewBox);
+            card.appendChild(info);
+            card.appendChild(btn);
+            onboardingList.appendChild(card);
+        });
+        onboardingModal.style.display = 'flex';
+    }
+
+    function closeOnboardingModal() {
+        if (onboardingModal) onboardingModal.style.display = 'none';
     }
 
     // 간식/밥 선택 모달
@@ -639,6 +671,7 @@ window.MangoGame = window.MangoGame || {};
         resultEl: document.getElementById('game-result'),
         resultTitleEl: document.getElementById('result-title'),
         resultDetailsEl: document.getElementById('result-details'),
+        getCharacterId: () => state.character,
         onStatGain: ({ happy, exp }) => {
             state.happy = clamp(state.happy + happy, 0, 100);
             addExp(exp);
@@ -665,6 +698,8 @@ window.MangoGame = window.MangoGame || {};
         }
     });
 
+    const btnGoHome = document.getElementById('btn-go-home');
+
     function toggleScreen() {
         if (isHome) {
             if (state.isSleeping) {
@@ -680,6 +715,7 @@ window.MangoGame = window.MangoGame || {};
             homeBtns.style.display = 'none';
             gameScreen.style.display = 'flex';
             gameBtns.style.display = 'flex';
+            if (btnGoHome) btnGoHome.style.display = 'inline-flex';
             isHome = false;
             minigame.reset();
         } else {
@@ -688,6 +724,7 @@ window.MangoGame = window.MangoGame || {};
             gameBtns.style.display = 'none';
             homeScreen.style.display = 'flex';
             homeBtns.style.display = 'flex';
+            if (btnGoHome) btnGoHome.style.display = 'none';
             isHome = true;
             updateUI();
         }
@@ -711,8 +748,9 @@ window.MangoGame = window.MangoGame || {};
         homeMango.style.transform = `scaleX(${mangoDir})`;
     }, 90);
 
-    // 시간 경과 스탯 변화
+    // 시간 경과 스탯 변화 (최초 강아지 선택 완료 후부터 동작)
     setInterval(() => {
+        if (!state.hasSelectedCharacter) return;
         if (state.isSleeping) {
             state.fatigue = clamp(state.fatigue - 8, 0, 100);
             state.hunger = clamp(state.hunger - 2, 0, 100);
@@ -745,6 +783,7 @@ window.MangoGame = window.MangoGame || {};
 
     function withClickSound(fn) {
         return (...args) => {
+            if (!state.hasSelectedCharacter) return;
             if (ns.Sound) ns.Sound.playClick();
             return fn(...args);
         };
@@ -820,11 +859,17 @@ window.MangoGame = window.MangoGame || {};
     });
 
     updateUI();
+    if (!state.hasSelectedCharacter) {
+        openOnboardingModal();
+    }
 
     // Supabase 설정 시 비동기로 클라우드 상태 동기화
     ns.StorageService.initCloud(state).then(({ connected, state: syncedState }) => {
         if (connected && syncedState) {
             state = syncedState;
+            if (state.hasSelectedCharacter) {
+                closeOnboardingModal();
+            }
             updateUI();
         }
     });
