@@ -431,6 +431,80 @@ window.MangoGame = window.MangoGame || {};
                 <rect x="17" y="-1" width="1" height="1" fill="#ffd32a"/>
                 <rect x="14" y="1" width="2" height="1" fill="#ff3f34"/>
             </g>
+            <!-- Accessory: Flower Crown -->
+            <g class="acc-layer acc-flower" style="display:none;">
+                <rect x="10" y="3" width="10" height="1" fill="#58b368"/>
+                <rect x="11" y="2" width="8" height="1" fill="#73c982"/>
+                <rect x="10" y="2" width="3" height="3" fill="#ffb3c6"/>
+                <rect x="11" y="3" width="1" height="1" fill="#ffe28a"/>
+                <rect x="14" y="1" width="3" height="3" fill="#ffffff"/>
+                <rect x="15" y="2" width="1" height="1" fill="#ffd32a"/>
+                <rect x="18" y="2" width="3" height="3" fill="#ffb3c6"/>
+                <rect x="19" y="3" width="1" height="1" fill="#ffe28a"/>
+            </g>
+            <!-- Accessory: Plaid Scarf -->
+            <g class="acc-layer acc-scarf" style="display:none;">
+                <rect x="10" y="13" width="9" height="2" fill="#e05a5a"/>
+                <rect x="12" y="13" width="2" height="2" fill="#fff5e1"/>
+                <rect x="16" y="13" width="2" height="2" fill="#fff5e1"/>
+                <rect x="11" y="14" width="1" height="1" fill="#b83b3b"/>
+                <rect x="15" y="14" width="1" height="1" fill="#b83b3b"/>
+                <rect x="15" y="15" width="3" height="3" fill="#e05a5a"/>
+                <rect x="16" y="15" width="1" height="3" fill="#fff5e1"/>
+                <rect x="15" y="18" width="1" height="1" fill="#fff5e1"/>
+                <rect x="17" y="18" width="1" height="1" fill="#fff5e1"/>
+            </g>
+            <!-- Accessory: Artist Beret -->
+            <g class="acc-layer acc-beret" style="display:none;">
+                <rect x="14" y="-1" width="2" height="1" fill="#5a3535"/>
+                <rect x="10" y="0" width="9" height="3" fill="#b84a5a"/>
+                <rect x="9" y="1" width="10" height="2" fill="#d45d6e"/>
+                <rect x="11" y="0" width="6" height="1" fill="#e67a8a"/>
+                <rect x="10" y="3" width="8" height="1" fill="#8a3340"/>
+            </g>
+            <!-- Accessory: Strawberry Hat -->
+            <g class="acc-layer acc-berry-hat" style="display:none;">
+                <rect x="14" y="-2" width="2" height="1" fill="#58b368"/>
+                <rect x="13" y="-1" width="4" height="1" fill="#73c982"/>
+                <rect x="11" y="0" width="8" height="3" fill="#ff5e78"/>
+                <rect x="10" y="1" width="10" height="3" fill="#ff5e78"/>
+                <rect x="11" y="4" width="8" height="1" fill="#d93b56"/>
+                <rect x="12" y="1" width="1" height="1" fill="#fff2b2"/>
+                <rect x="15" y="1" width="1" height="1" fill="#fff2b2"/>
+                <rect x="18" y="1" width="1" height="1" fill="#fff2b2"/>
+                <rect x="13" y="3" width="1" height="1" fill="#fff2b2"/>
+                <rect x="16" y="3" width="1" height="1" fill="#fff2b2"/>
+            </g>
+            <!-- Accessory: Walk Backpack -->
+            <g class="acc-layer acc-backpack" style="display:none;">
+                <rect x="5" y="10" width="5" height="5" fill="#f6c959"/>
+                <rect x="6" y="9" width="3" height="1" fill="#d99b38"/>
+                <rect x="4" y="11" width="1" height="3" fill="#6b5244"/>
+                <rect x="10" y="11" width="1" height="4" fill="#6b5244"/>
+                <rect x="5" y="15" width="5" height="1" fill="#6b5244"/>
+                <rect x="6" y="11" width="3" height="1" fill="#fff3c4"/>
+                <rect x="6" y="13" width="3" height="2" fill="#e88484"/>
+                <rect x="10" y="13" width="2" height="1" fill="#d99b38"/>
+            </g>
+            <!-- Accessory: Angel Wings -->
+            <g class="acc-layer acc-wings" style="display:none;">
+                <rect x="1" y="4" width="3" height="1" fill="#6b8fb5"/>
+                <rect x="0" y="5" width="1" height="4" fill="#6b8fb5"/>
+                <rect x="4" y="5" width="2" height="1" fill="#6b8fb5"/>
+                <rect x="6" y="6" width="2" height="1" fill="#6b8fb5"/>
+                <rect x="1" y="9" width="2" height="1" fill="#6b8fb5"/>
+                <rect x="3" y="10" width="2" height="1" fill="#6b8fb5"/>
+                <rect x="5" y="11" width="3" height="1" fill="#6b8fb5"/>
+                <rect x="8" y="7" width="1" height="4" fill="#6b8fb5"/>
+                <rect x="1" y="5" width="3" height="4" fill="#ffffff"/>
+                <rect x="4" y="6" width="2" height="4" fill="#ffffff"/>
+                <rect x="6" y="7" width="2" height="4" fill="#ffffff"/>
+                <rect x="2" y="7" width="2" height="2" fill="#dceeff"/>
+                <rect x="4" y="8" width="2" height="2" fill="#dceeff"/>
+                <rect x="6" y="9" width="2" height="2" fill="#c7e2ff"/>
+                <rect x="4" y="2" width="1" height="2" fill="#ffd32a"/>
+                <rect x="3" y="3" width="3" height="1" fill="#ffd32a"/>
+            </g>
         `;
     }
 
@@ -774,6 +848,125 @@ window.MangoGame = window.MangoGame || {};
         `;
     }
 
+    function buildCozyRoomThemeSvg() {
+        return `
+        <svg class="theme-bg-svg" viewBox="0 0 64 74" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+            <!-- Cream Striped Wallpaper -->
+            <rect x="0" y="0" width="64" height="58" fill="#fff9ef"/>
+            <rect x="6" y="0" width="3" height="58" fill="#f5e9d6"/>
+            <rect x="18" y="0" width="3" height="58" fill="#f5e9d6"/>
+            <rect x="30" y="0" width="3" height="58" fill="#f5e9d6"/>
+            <rect x="42" y="0" width="3" height="58" fill="#f5e9d6"/>
+            <rect x="54" y="0" width="3" height="58" fill="#f5e9d6"/>
+            <!-- Wood Wainscoting Lower Wall -->
+            <rect x="0" y="55" width="64" height="19" fill="#e9d8c3"/>
+            <rect x="0" y="54" width="64" height="2" fill="#d3b89b"/>
+            <rect x="8" y="56" width="1" height="18" fill="#d8c0a6"/>
+            <rect x="18" y="56" width="1" height="18" fill="#d8c0a6"/>
+            <rect x="28" y="56" width="1" height="18" fill="#d8c0a6"/>
+            <rect x="38" y="56" width="1" height="18" fill="#d8c0a6"/>
+            <rect x="48" y="56" width="1" height="18" fill="#d8c0a6"/>
+            <rect x="58" y="56" width="1" height="18" fill="#d8c0a6"/>
+            <!-- Heart Picture Frame (Left) -->
+            <rect x="7" y="21" width="12" height="14" fill="#8a634b"/>
+            <rect x="8" y="22" width="10" height="12" fill="#fffcf8"/>
+            <rect x="11" y="26" width="2" height="3" fill="#f29b9b"/>
+            <rect x="14" y="26" width="2" height="3" fill="#f29b9b"/>
+            <rect x="12" y="27" width="3" height="3" fill="#f29b9b"/>
+            <rect x="13" y="30" width="1" height="1" fill="#f29b9b"/>
+            <!-- Lattice Window with Sky, Cloud & Sun -->
+            <rect x="26" y="15" width="28" height="26" fill="#8a634b"/>
+            <rect x="28" y="17" width="11" height="10" fill="#c4e7ff"/>
+            <rect x="41" y="17" width="11" height="10" fill="#c4e7ff"/>
+            <rect x="28" y="29" width="11" height="10" fill="#c4e7ff"/>
+            <rect x="41" y="29" width="11" height="10" fill="#c4e7ff"/>
+            <g class="bg-cloud-slow">
+                <rect x="31" y="23" width="7" height="3" fill="#ffffff"/>
+                <rect x="33" y="22" width="4" height="1" fill="#ffffff"/>
+            </g>
+            <g class="beach-sun-rays">
+                <rect x="44" y="19" width="5" height="5" fill="#ffe28a"/>
+                <rect x="45" y="20" width="3" height="3" fill="#fff3b0"/>
+            </g>
+            <!-- Window Sill -->
+            <rect x="24" y="41" width="32" height="3" fill="#b2825e"/>
+            <rect x="24" y="43" width="32" height="1" fill="#8a634b"/>
+            <!-- Soft Sunlit Glow Beams -->
+            <g class="cozy-sunbeam">
+                <rect x="26" y="45" width="24" height="5" fill="#fff8cf"/>
+                <rect x="22" y="50" width="24" height="6" fill="#fff8cf"/>
+            </g>
+            <!-- Cozy Pink Dog Cushion (Left) -->
+            <rect x="5" y="68" width="18" height="6" fill="#f7c5cc"/>
+            <rect x="7" y="66" width="14" height="3" fill="#fce2e6"/>
+            <rect x="7" y="65" width="14" height="1" fill="#8a634b"/>
+            <rect x="4" y="69" width="1" height="5" fill="#8a634b"/>
+            <rect x="23" y="69" width="1" height="5" fill="#8a634b"/>
+            <!-- Potted Plant (Right) -->
+            <rect x="51" y="65" width="8" height="9" fill="#d98761"/>
+            <rect x="50" y="64" width="10" height="2" fill="#e69a75"/>
+            <rect x="54" y="58" width="2" height="6" fill="#5a9e66"/>
+            <rect x="50" y="57" width="4" height="4" fill="#73ba7d"/>
+            <rect x="55" y="55" width="5" height="4" fill="#73ba7d"/>
+            <rect x="52" y="53" width="4" height="3" fill="#9dd8a6"/>
+        </svg>`;
+    }
+
+    function buildAutumnThemeSvg() {
+        return `
+        <svg class="theme-bg-svg" viewBox="0 0 64 74" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+            <!-- Warm Autumn Sunset Sky Bands -->
+            <rect x="0" y="0" width="64" height="18" fill="#f7b787"/>
+            <rect x="0" y="18" width="64" height="18" fill="#fcd1a7"/>
+            <rect x="0" y="36" width="64" height="22" fill="#fee6c7"/>
+            <rect x="0" y="58" width="64" height="16" fill="#fff2dc"/>
+            <!-- Soft Sunset Clouds -->
+            <g class="bg-cloud-slow">
+                <rect x="34" y="9" width="14" height="3" fill="#fff9ef"/>
+                <rect x="37" y="8" width="8" height="1" fill="#fff9ef"/>
+                <rect x="12" y="16" width="11" height="3" fill="#fff9ef"/>
+                <rect x="14" y="15" width="7" height="1" fill="#fff9ef"/>
+            </g>
+            <!-- Distant Autumn Hills -->
+            <rect x="0" y="59" width="26" height="15" fill="#e59e70"/>
+            <rect x="4" y="57" width="18" height="2" fill="#e59e70"/>
+            <rect x="24" y="61" width="40" height="13" fill="#d98a5f"/>
+            <rect x="32" y="58" width="26" height="3" fill="#d98a5f"/>
+            <!-- Left Crimson Maple Tree -->
+            <rect x="8" y="42" width="5" height="32" fill="#6b4c3e"/>
+            <rect x="9" y="44" width="1" height="28" fill="#846050"/>
+            <rect x="1" y="23" width="22" height="18" fill="#d94f4f"/>
+            <rect x="4" y="19" width="16" height="5" fill="#d94f4f"/>
+            <rect x="3" y="21" width="18" height="13" fill="#eb6e53"/>
+            <rect x="6" y="23" width="11" height="7" fill="#f59d56"/>
+            <!-- Right Golden Ginkgo Tree -->
+            <rect x="55" y="44" width="4" height="30" fill="#6b4c3e"/>
+            <rect x="49" y="26" width="15" height="18" fill="#e09626"/>
+            <rect x="51" y="23" width="13" height="4" fill="#e09626"/>
+            <rect x="51" y="25" width="13" height="12" fill="#f2b830"/>
+            <rect x="53" y="27" width="9" height="7" fill="#fbd66d"/>
+            <!-- Vintage Park Lamp Post -->
+            <rect x="44" y="47" width="2" height="27" fill="#5c4a42"/>
+            <rect x="42" y="72" width="6" height="2" fill="#5c4a42"/>
+            <rect x="41" y="43" width="8" height="1" fill="#5c4a42"/>
+            <g class="autumn-lamp-glow">
+                <rect x="42" y="44" width="6" height="4" fill="#fff4b8"/>
+                <rect x="43" y="45" width="4" height="2" fill="#ffe580"/>
+            </g>
+            <!-- Falling Maple & Ginkgo Leaves -->
+            <g class="autumn-leaves-a">
+                <rect x="27" y="37" width="2" height="1" fill="#d94f4f"/>
+                <rect x="40" y="44" width="2" height="1" fill="#eb6e53"/>
+                <rect x="26" y="53" width="2" height="1" fill="#f2b830"/>
+            </g>
+            <g class="autumn-leaves-b">
+                <rect x="34" y="31" width="2" height="1" fill="#f2b830"/>
+                <rect x="50" y="47" width="2" height="1" fill="#fbd66d"/>
+                <rect x="33" y="57" width="2" height="1" fill="#d94f4f"/>
+            </g>
+        </svg>`;
+    }
+
     ns.Sprites = {
         render(svgEl, charId, options = {}) {
             if (!svgEl) return;
@@ -811,6 +1004,8 @@ window.MangoGame = window.MangoGame || {};
             if (themeClass === 'theme-sakura') return buildSakuraThemeSvg();
             if (themeClass === 'theme-beach') return buildBeachThemeSvg();
             if (themeClass === 'theme-camping') return buildCampingThemeSvg();
+            if (themeClass === 'theme-cozy-room') return buildCozyRoomThemeSvg();
+            if (themeClass === 'theme-autumn') return buildAutumnThemeSvg();
             return buildDefaultThemeSvg();
         }
     };

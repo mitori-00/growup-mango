@@ -22,6 +22,7 @@ window.MangoGame = window.MangoGame || {};
     const shopCoinDisplay = document.getElementById('shop-coin-display');
     const homeBestScore = document.getElementById('home-best-score');
     const homeFormName = document.getElementById('home-form-name');
+    const homeBuffBadge = document.getElementById('home-buff-badge');
     const hungerBar = document.getElementById('hunger-bar');
     const happyBar = document.getElementById('happy-bar');
     const fatigueBar = document.getElementById('fatigue-bar');
@@ -153,14 +154,28 @@ window.MangoGame = window.MangoGame || {};
         return ns.EVOLUTION_FORMS.find((f) => f.id === formId) || ns.EVOLUTION_FORMS[0];
     }
 
+    function getActiveBuff() {
+        const meta = getFormMeta(getCurrentFormId());
+        return (meta && meta.buff) ? meta.buff : {};
+    }
+
+    function getLevelStaminaFactor() {
+        return Math.max(0.45, 1 - Math.max(0, state.level - 1) * 0.02);
+    }
+
     function recordCare(type, amount = 1) {
         if (!state.careStats) state.careStats = { feed: 0, play: 0, sleep: 0 };
         state.careStats[type] = (state.careStats[type] || 0) + amount;
         checkUnlockableForms(true);
     }
 
-    function addExp(amount) {
-        state.exp += amount;
+    function addExp(amount, opts = {}) {
+        const buff = getActiveBuff();
+        let mult = buff.allExpMult || 1;
+        if (opts.isFeed && buff.feedExpMult) {
+            mult *= buff.feedExpMult;
+        }
+        state.exp += Math.round(amount * mult);
         let leveledUp = false;
         while (state.exp >= 100) {
             state.exp -= 100;
@@ -196,7 +211,7 @@ window.MangoGame = window.MangoGame || {};
     }
 
     function applyTheme() {
-        const themeClasses = ['theme-default', 'theme-sakura', 'theme-beach', 'theme-camping'];
+        const themeClasses = ['theme-default', 'theme-sakura', 'theme-beach', 'theme-camping', 'theme-cozy-room', 'theme-autumn'];
         const activeTheme = state.equippedTheme || 'theme-default';
         [homeScreen, gameScreen, jumpScreen].forEach((el) => {
             if (!el) return;
@@ -268,6 +283,14 @@ window.MangoGame = window.MangoGame || {};
         const lvStr = String(state.level).padStart(2, '0');
         levelDisplay.textContent = `LV.${lvStr} (${formMeta.stage})`;
         homeFormName.textContent = `${formMeta.icon} ${getFormDisplayName(formMeta)}`;
+        if (homeBuffBadge) {
+            if (formMeta.buffShort) {
+                homeBuffBadge.textContent = formMeta.buffShort;
+                homeBuffBadge.style.display = 'inline-block';
+            } else {
+                homeBuffBadge.style.display = 'none';
+            }
+        }
         coinDisplay.textContent = state.coins;
         shopCoinDisplay.textContent = state.coins;
         homeBestScore.textContent = state.highScore;
@@ -422,18 +445,20 @@ window.MangoGame = window.MangoGame || {};
         basicCard.innerHTML = `
             <div class="item-info">
                 <div class="item-name">🍖 기본 사료 (무료)</div>
-                <div class="item-desc">배고픔 +20, 피로 +5, 경험치 +20</div>
+                <div class="item-desc">배고픔 +20, 피로 +3, 경험치 +20</div>
             </div>
             <button type="button" class="item-btn">먹이기</button>
         `;
         basicCard.querySelector('button').addEventListener('click', () => {
             if (ns.Sound) ns.Sound.playFeed();
+            const buff = getActiveBuff();
             recordCare('feed', 1);
-            state.hunger = clamp(state.hunger + 20, 0, 100);
-            state.fatigue = clamp(state.fatigue + 5, 0, 100);
-            addExp(20);
+            const hungerGain = Math.round(20 * (buff.feedHungerMult || 1));
+            state.hunger = clamp(state.hunger + hungerGain, 0, 100);
+            state.fatigue = clamp(state.fatigue + 3, 0, 100);
+            addExp(20, { isFeed: true });
             foodModal.style.display = 'none';
-            showBubble('YUMMY! +EXP');
+            showBubble(buff.feedHungerMult ? 'YUMMY! +25% 버프' : 'YUMMY! +EXP');
             updateUI();
             save();
         });
@@ -455,12 +480,14 @@ window.MangoGame = window.MangoGame || {};
             `;
             card.querySelector('button').addEventListener('click', () => {
                 if (ns.Sound) ns.Sound.playFeed();
+                const buff = getActiveBuff();
                 recordCare('feed', 1);
                 state.inventory[snack.id] -= 1;
-                state.hunger = clamp(state.hunger + snack.effect.hunger, 0, 100);
+                const hungerGain = Math.round(snack.effect.hunger * (buff.feedHungerMult || 1));
+                state.hunger = clamp(state.hunger + hungerGain, 0, 100);
                 state.happy = clamp(state.happy + snack.effect.happy, 0, 100);
                 state.fatigue = clamp(state.fatigue + snack.effect.fatigue, 0, 100);
-                addExp(snack.effect.exp);
+                addExp(snack.effect.exp, { isFeed: true });
                 foodModal.style.display = 'none';
                 showBubble(`${snack.name} 최고!`);
                 updateUI();
@@ -595,9 +622,16 @@ window.MangoGame = window.MangoGame || {};
 
         const { feed, play, sleep } = state.careStats;
         const adultHint = state.level >= 11
-            ? ' · 해금된 성견 외형을 선택할 수 있어요!'
-            : ' · 성견(Lv.11+) 달성 시 해금 외형 선택 가능';
-        dexCareSummary.textContent = `누적 케어 — 밥 ${feed} · 놀이 ${play} · 수면 ${sleep}${adultHint}`;
+            ? '해금된 성견 스킨을 선택하면 전용 효과가 바로 적용돼요!'
+            : 'Lv.11 성견 달성 후 해금된 스킨과 효과를 자유롭게 변경할 수 있어요.';
+        dexCareSummary.innerHTML = `
+            <div class="dex-care-chips">
+                <span class="dex-chip">🍖 밥 ${feed}</span>
+                <span class="dex-chip">⚽ 놀이 ${play}</span>
+                <span class="dex-chip">💤 수면 ${sleep}</span>
+            </div>
+            <div class="dex-care-hint">${adultHint}</div>
+        `;
 
         dexList.innerHTML = '';
         ns.EVOLUTION_FORMS.forEach((form) => {
@@ -605,22 +639,24 @@ window.MangoGame = window.MangoGame || {};
             const isCurrent = currentFormId === form.id;
             const canSelectAdult = unlocked && form.stage === 'ADULT' && state.level >= 11;
             const card = document.createElement('div');
-            card.className = `item-card dex-card ${unlocked ? '' : 'locked'}`.trim();
-            card.innerHTML = `
-                <div class="item-info">
-                    <div class="item-name">
-                        ${unlocked ? `${form.icon} ${getFormDisplayName(form)}` : '🔒 ???'}
-                        ${isCurrent && !canSelectAdult ? '<span class="dex-now-tag">현재</span>' : ''}
-                    </div>
-                    <div class="item-desc">${unlocked ? form.desc : `조건: ${form.condition} (${getFormProgressText(form)})`}</div>
-                    ${unlocked ? `<div class="dex-cond">달성 조건: ${form.condition}</div>` : ''}
-                </div>
+            card.className = `dex-card ${unlocked ? '' : 'locked'} ${isCurrent ? 'active' : ''}`.trim();
+
+            const topRow = document.createElement('div');
+            topRow.className = 'dex-card-top';
+
+            const titleWrap = document.createElement('div');
+            titleWrap.className = 'dex-title-wrap';
+            const stageLabel = form.stage === 'ADULT' ? '성견' : (form.stage === 'TEEN' ? '청소년' : '아기');
+            titleWrap.innerHTML = `
+                <span class="dex-stage-tag stage-${form.stage.toLowerCase()}">${stageLabel}</span>
+                <span class="dex-name">${unlocked ? `${form.icon} ${getFormDisplayName(form)}` : '🔒 미해금 스킨'}</span>
             `;
+            topRow.appendChild(titleWrap);
 
             if (canSelectAdult) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = isCurrent ? 'item-btn equipped' : 'item-btn';
+                btn.className = isCurrent ? 'dex-apply-btn equipped' : 'dex-apply-btn';
                 btn.textContent = isCurrent ? '적용중' : '적용';
                 btn.disabled = isCurrent;
                 btn.addEventListener('click', () => {
@@ -631,8 +667,37 @@ window.MangoGame = window.MangoGame || {};
                     renderDexList();
                     save(true);
                 });
-                card.appendChild(btn);
+                topRow.appendChild(btn);
+            } else if (isCurrent) {
+                const nowTag = document.createElement('span');
+                nowTag.className = 'dex-now-tag';
+                nowTag.textContent = '현재';
+                topRow.appendChild(nowTag);
             }
+            card.appendChild(topRow);
+
+            if (unlocked) {
+                const descEl = document.createElement('div');
+                descEl.className = 'dex-desc';
+                descEl.textContent = form.desc;
+                card.appendChild(descEl);
+            }
+
+            if (form.buffLabel) {
+                const buffEl = document.createElement('div');
+                const isNoBuff = !form.buffShort;
+                buffEl.className = `dex-buff-box ${isNoBuff ? 'neutral' : ''}`.trim();
+                buffEl.innerHTML = `<span class="dex-buff-label">효과</span><span>${form.buffLabel}</span>`;
+                card.appendChild(buffEl);
+            }
+
+            const condEl = document.createElement('div');
+            condEl.className = 'dex-cond';
+            condEl.innerHTML = unlocked
+                ? `<span class="dex-cond-badge done">달성</span><span>${form.condition}</span>`
+                : `<span class="dex-cond-badge">조건</span><span>${form.condition}</span><span class="dex-progress">(${getFormProgressText(form)})</span>`;
+            card.appendChild(condEl);
+
             dexList.appendChild(card);
         });
 
@@ -697,10 +762,11 @@ window.MangoGame = window.MangoGame || {};
             showBubble('TOO TIRED...');
             return;
         }
+        const staminaFactor = getLevelStaminaFactor();
         recordCare('play', 1);
         state.happy = clamp(state.happy + 20, 0, 100);
-        state.hunger = clamp(state.hunger - 10, 0, 100);
-        state.fatigue = clamp(state.fatigue + 15, 0, 100);
+        state.hunger = clamp(state.hunger - Math.max(4, Math.round(8 * staminaFactor)), 0, 100);
+        state.fatigue = clamp(state.fatigue + Math.max(5, Math.round(10 * staminaFactor)), 0, 100);
         addExp(25);
         showBubble('SO FUN! +EXP');
         updateUI();
@@ -719,15 +785,21 @@ window.MangoGame = window.MangoGame || {};
     }
 
     function handleMinigameComplete({ score, baseCoins, clearBonus, goldCoins, survivedAll }) {
+        const buff = getActiveBuff();
         recordCare('play', 2);
         const isNewRecord = score > state.highScore;
         const recordBonus = isNewRecord ? ns.MINIGAME_CONFIG.newRecordBonusCoins : 0;
         if (isNewRecord) {
             state.highScore = score;
         }
-        const totalCoins = baseCoins + clearBonus + goldCoins + recordBonus;
+        const rawCoins = baseCoins + clearBonus + goldCoins + recordBonus;
+        const coinMult = buff.coinBonusMult || 1;
+        const skinCoinBonus = coinMult > 1 ? Math.round(rawCoins * (coinMult - 1)) : 0;
+        const totalCoins = rawCoins + skinCoinBonus;
+        const baseFatigueCost = buff.minigameFatigueCost != null ? buff.minigameFatigueCost : ns.MINIGAME_CONFIG.fatigueCost;
+        const fatigueCost = Math.max(4, Math.round(baseFatigueCost * getLevelStaminaFactor()));
         state.coins += totalCoins;
-        state.fatigue = clamp(state.fatigue + ns.MINIGAME_CONFIG.fatigueCost, 0, 100);
+        state.fatigue = clamp(state.fatigue + fatigueCost, 0, 100);
         updateUI();
         save(true);
         ns.StorageService.recordScore({
@@ -736,7 +808,7 @@ window.MangoGame = window.MangoGame || {};
             survivedAll,
             nickname: state.nickname
         });
-        return { score, baseCoins, clearBonus, goldCoins, recordBonus, totalCoins, isNewRecord };
+        return { score, baseCoins, clearBonus, goldCoins, recordBonus, skinCoinBonus, totalCoins, isNewRecord };
     }
 
     // 미니게임 1: 캐치 게임
@@ -752,6 +824,7 @@ window.MangoGame = window.MangoGame || {};
         resultTitleEl: document.getElementById('result-title'),
         resultDetailsEl: document.getElementById('result-details'),
         getCharacterId: () => state.character,
+        getActiveBuff: () => getActiveBuff(),
         onStatGain: ({ happy, exp }) => {
             state.happy = clamp(state.happy + happy, 0, 100);
             addExp(exp);
@@ -772,6 +845,7 @@ window.MangoGame = window.MangoGame || {};
         resultTitleEl: document.getElementById('jump-result-title'),
         resultDetailsEl: document.getElementById('jump-result-details'),
         getCharacterId: () => state.character,
+        getActiveBuff: () => getActiveBuff(),
         onStatGain: ({ happy, exp }) => {
             state.happy = clamp(state.happy + happy, 0, 100);
             addExp(exp);
@@ -859,24 +933,48 @@ window.MangoGame = window.MangoGame || {};
         homeMango.style.transform = `scaleX(${mangoDir})`;
     }, 90);
 
-    // 시간 경과 스탯 변화 (최초 강아지 선택 완료 후부터 동작)
+    // 시간 경과 스탯 변화 (기본 1.5배 완만 + 레벨이 오를수록 배고픔·피로도 더 천천히 변화)
+    let decayTick = 0;
+    let hungerDecayAcc = 0;
+    let fatigueGainAcc = 0;
     setInterval(() => {
         if (!state.hasSelectedCharacter) return;
+        decayTick += 1;
+        const buff = getActiveBuff();
+        const levelFactor = getLevelStaminaFactor();
         if (state.isSleeping) {
-            state.fatigue = clamp(state.fatigue - 8, 0, 100);
-            state.hunger = clamp(state.hunger - 2, 0, 100);
+            const healAmt = Math.round(12 * (buff.sleepHealMult || 1));
+            state.fatigue = clamp(state.fatigue - healAmt, 0, 100);
+            state.hunger = clamp(state.hunger - 1, 0, 100);
             if (state.fatigue === 0) {
                 state.isSleeping = false;
                 showBubble('GOOD MORNING!');
             }
         } else if (isHome) {
-            state.hunger = clamp(state.hunger - 2, 0, 100);
-            state.happy = clamp(state.happy - 2, 0, 100);
-            state.fatigue = clamp(state.fatigue + 2, 0, 100);
+            const decayMult = buff.decaySlowMult || 1;
+            hungerDecayAcc += 2 * levelFactor * decayMult;
+            const hungerDrop = Math.floor(hungerDecayAcc);
+            if (hungerDrop >= 1) {
+                hungerDecayAcc -= hungerDrop;
+                state.hunger = clamp(state.hunger - hungerDrop, 0, 100);
+            }
+
+            const skipHappy = decayMult < 1 && (decayTick % 4 === 0);
+            if (!skipHappy) {
+                state.happy = clamp(state.happy - 2, 0, 100);
+            }
+
+            const fatigueMult = buff.fatigueGainMult || 1;
+            fatigueGainAcc += 2 * levelFactor * fatigueMult;
+            const fatigueUp = Math.floor(fatigueGainAcc);
+            if (fatigueUp >= 1) {
+                fatigueGainAcc -= fatigueUp;
+                state.fatigue = clamp(state.fatigue + fatigueUp, 0, 100);
+            }
         }
         updateUI();
         save();
-    }, 4000);
+    }, 6000);
 
     // 효과음 토글 버튼 초기화
     const soundToggleBtn = document.getElementById('sound-toggle-btn');

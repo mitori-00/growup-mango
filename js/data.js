@@ -61,7 +61,10 @@ window.MangoGame.EVOLUTION_FORMS = [
         icon: '🐶',
         condition: 'Lv.01 기본 형태',
         requirement: { minLevel: 1 },
-        desc: '호기심 많은 아기 강아지 시절이에요.'
+        desc: '호기심 많은 아기 강아지 시절이에요.',
+        buffLabel: null,
+        buffShort: null,
+        buff: {}
     },
     {
         id: 'teen',
@@ -70,7 +73,10 @@ window.MangoGame.EVOLUTION_FORMS = [
         icon: '🐕',
         condition: 'Lv.06 달성',
         requirement: { minLevel: 6 },
-        desc: '부쩍 자라서 산책과 놀이를 좋아해요.'
+        desc: '부쩍 자라서 산책과 놀이를 좋아해요.',
+        buffLabel: null,
+        buffShort: null,
+        buff: {}
     },
     {
         id: 'adult_basic',
@@ -79,7 +85,10 @@ window.MangoGame.EVOLUTION_FORMS = [
         icon: '🐾',
         condition: 'Lv.11 달성',
         requirement: { minLevel: 11 },
-        desc: '별도 장식 없이 본연의 모습으로 늠름하게 자란 기본 성견이에요.'
+        desc: '별도 장식 없이 본연의 모습으로 늠름하게 자란 기본 성견이에요.',
+        buffLabel: '효과 없음 (순정 클래식 모드)',
+        buffShort: null,
+        buff: {}
     },
     {
         id: 'adult_foodie',
@@ -88,7 +97,10 @@ window.MangoGame.EVOLUTION_FORMS = [
         icon: '🍖',
         condition: 'Lv.11 달성 + 누적 밥 주기 10회',
         requirement: { minLevel: 11, feed: 10 },
-        desc: '맛있는 간식을 제일 좋아하는 빨간 턱받이 스타일!'
+        desc: '맛있는 간식을 제일 좋아하는 빨간 턱받이 스타일!',
+        buffLabel: '밥·간식 포만감/EXP +25% · 미니게임 간식 점수 +20%',
+        buffShort: '🍖 밥+25% · 간식+20%',
+        buff: { feedHungerMult: 1.25, feedExpMult: 1.25, minigameSnackScoreMult: 1.2 }
     },
     {
         id: 'adult_sleepy',
@@ -97,7 +109,10 @@ window.MangoGame.EVOLUTION_FORMS = [
         icon: '💤',
         condition: 'Lv.15 달성 + 누적 재우기 5회',
         requirement: { minLevel: 15, sleep: 5 },
-        desc: '수면 모자를 쓰고 늘 포근하게 졸고 있는 스타일!'
+        desc: '수면 모자를 쓰고 늘 포근하게 졸고 있는 스타일!',
+        buffLabel: '수면 회복 2배 · 피로 증가 절반 · 미니게임 피로 6',
+        buffShort: '💤 회복x2 · 피로↓',
+        buff: { sleepHealMult: 2, fatigueGainMult: 0.5, minigameFatigueCost: 6 }
     },
     {
         id: 'adult_sporty',
@@ -106,25 +121,34 @@ window.MangoGame.EVOLUTION_FORMS = [
         icon: '⚽',
         condition: 'Lv.20 달성 + 누적 놀이·미니게임 10회',
         requirement: { minLevel: 20, play: 10 },
-        desc: '스포츠 머리띠와 앞발 아대를 두른 체력왕 스타일!'
+        desc: '스포츠 머리띠와 앞발 아대를 두른 체력왕 스타일!',
+        buffLabel: '캐치 이동속도 +25% · 점프 런 콤보 보너스 +15%',
+        buffShort: '⚽ 속도+25% · 콤보+15%',
+        buff: { catchSpeedMult: 1.25, jumpComboBonusMult: 1.15 }
     },
     {
         id: 'adult_balanced',
         stage: 'ADULT',
         namePrefix: '황금 밸런스',
         icon: '✨',
-        condition: 'Lv.25 달성 + 밥 10 · 놀이 10 · 수면 5 모두 달성',
+        condition: 'Lv.25 달성 + 밥 10 · 놀이 10 · 수면 5',
         requirement: { minLevel: 25, feed: 10, play: 10, sleep: 5 },
-        desc: '모든 케어를 고르게 채워 황금 헤일로로 빛나는 희귀 형태!'
+        desc: '모든 케어를 고르게 채워 황금 헤일로로 빛나는 희귀 형태!',
+        buffLabel: '모든 EXP +20% · 스탯 감소 -25% · 미니게임 코인 +25%',
+        buffShort: '✨ EXP+20% · 코인+25%',
+        buff: { allExpMult: 1.2, decaySlowMult: 0.75, coinBonusMult: 1.25 }
     },
     {
         id: 'adult_royal',
         stage: 'ADULT',
         namePrefix: '로얄',
         icon: '👑',
-        condition: 'Lv.30 달성 + 밥 20 · 놀이 20 · 수면 10 모두 달성',
+        condition: 'Lv.30 달성 + 밥 20 · 놀이 20 · 수면 10',
         requirement: { minLevel: 30, feed: 20, play: 20, sleep: 10 },
-        desc: '최고의 사랑으로 자라난 왕실 망토와 보석 왕관 스타일!'
+        desc: '최고의 사랑으로 자라난 왕실 망토와 보석 왕관 스타일!',
+        buffLabel: '모든 EXP +30% · 미니게임 하트 4개 · 코인 +40%',
+        buffShort: '👑 하트4 · 코인+40%',
+        buff: { allExpMult: 1.3, extraHearts: 1, coinBonusMult: 1.4 }
     }
 ];
 
@@ -132,7 +156,7 @@ window.MangoGame.MINIGAME_CONFIG = {
     durationSeconds: 60,
     maxHearts: 3,
     entryMaxFatigue: 85,
-    fatigueCost: 15,
+    fatigueCost: 10,
     invincibleMs: 800,
     survivalBonusCoins: 15,
     perfectBonusCoins: 25,
@@ -210,6 +234,54 @@ window.MangoGame.SHOP_ITEMS = [
         desc: '머리 위 황금 왕관 장착',
         cssClass: 'acc-crown'
     },
+    {
+        id: 'acc_flower',
+        category: 'accessory',
+        name: '🌼 데이지 화관',
+        price: 150,
+        desc: '머리 위에 상큼한 데이지 꽃 화관 장착',
+        cssClass: 'acc-flower'
+    },
+    {
+        id: 'acc_scarf',
+        category: 'accessory',
+        name: '🧣 체크 목도리',
+        price: 180,
+        desc: '목에 포근한 빨강·크림 체크 목도리 장착',
+        cssClass: 'acc-scarf'
+    },
+    {
+        id: 'acc_beret',
+        category: 'accessory',
+        name: '🎨 화가 베레모',
+        price: 220,
+        desc: '감성 가득한 버건디 베레모 장착',
+        cssClass: 'acc-beret'
+    },
+    {
+        id: 'acc_berry_hat',
+        category: 'accessory',
+        name: '🍓 딸기 모자',
+        price: 240,
+        desc: '귀여운 초록 꼭지 딸기 모자 장착',
+        cssClass: 'acc-berry-hat'
+    },
+    {
+        id: 'acc_backpack',
+        category: 'accessory',
+        name: '🎒 미니 산책 배낭',
+        price: 260,
+        desc: '등에 메는 노란 미니 산책 백팩 장착',
+        cssClass: 'acc-backpack'
+    },
+    {
+        id: 'acc_wings',
+        category: 'accessory',
+        name: '👼 천사 날개',
+        price: 380,
+        desc: '등 뒤에 반짝이는 몽실 천사 날개 장착',
+        cssClass: 'acc-wings'
+    },
 
     // 배경 테마 (영구 보유)
     {
@@ -235,5 +307,21 @@ window.MangoGame.SHOP_ITEMS = [
         price: 400,
         desc: '별빛 밤하늘과 모닥불 배경',
         themeClass: 'theme-camping'
+    },
+    {
+        id: 'theme_autumn',
+        category: 'theme',
+        name: '🍁 가을 단풍 공원',
+        price: 280,
+        desc: '노을빛 단풍나무와 은행잎이 흩날리는 공원 배경',
+        themeClass: 'theme-autumn'
+    },
+    {
+        id: 'theme_cozy_room',
+        category: 'theme',
+        name: '🛋️ 햇살 포근 거실',
+        price: 320,
+        desc: '따스한 햇살과 방석이 있는 포근한 거실 배경',
+        themeClass: 'theme-cozy-room'
     }
 ];

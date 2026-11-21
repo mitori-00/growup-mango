@@ -14,6 +14,7 @@ window.MangoGame = window.MangoGame || {};
             this.resultTitleEl = options.resultTitleEl;
             this.resultDetailsEl = options.resultDetailsEl;
             this.getCharacterId = options.getCharacterId || (() => 'mango');
+            this.getActiveBuff = options.getActiveBuff || (() => ({}));
             this.onStatGain = options.onStatGain;
             this.onComplete = options.onComplete;
 
@@ -22,7 +23,8 @@ window.MangoGame = window.MangoGame || {};
             this.score = 0;
             this.bonusCoins = 0;
             this.timeLeft = ns.MINIGAME_CONFIG.durationSeconds;
-            this.hearts = ns.MINIGAME_CONFIG.maxHearts;
+            this.maxHearts = this.getMaxHearts();
+            this.hearts = this.maxHearts;
             this.combo = 0;
             this.invincibleUntil = 0;
 
@@ -34,6 +36,11 @@ window.MangoGame = window.MangoGame || {};
             this.spawnTimer = 0;
         }
 
+        getMaxHearts() {
+            const buff = this.getActiveBuff() || {};
+            return ns.MINIGAME_CONFIG.maxHearts + (buff.extraHearts || 0);
+        }
+
         reset() {
             this.stopLoop();
             this.running = false;
@@ -41,7 +48,8 @@ window.MangoGame = window.MangoGame || {};
             this.score = 0;
             this.bonusCoins = 0;
             this.timeLeft = ns.MINIGAME_CONFIG.durationSeconds;
-            this.hearts = ns.MINIGAME_CONFIG.maxHearts;
+            this.maxHearts = this.getMaxHearts();
+            this.hearts = this.maxHearts;
             this.combo = 0;
             this.invincibleUntil = 0;
             this.spawnTimer = 0;
@@ -56,7 +64,7 @@ window.MangoGame = window.MangoGame || {};
             this.guideEl.innerHTML = `
                 CATCH GAME!<br>
                 ${items.tier1.emoji} +${items.tier1.points} · ${items.tier2.emoji} +${items.tier2.points} · ${items.tier3.emoji} +${items.tier3.points}<br>
-                💣 AVOID! / 60s ❤️❤️❤️<br><br>
+                💣 AVOID! / 60s ${'❤️'.repeat(this.maxHearts)}<br><br>
                 PRESS [PLAY / STOP]<br>TO START
             `;
             this.guideEl.style.display = 'block';
@@ -158,7 +166,8 @@ window.MangoGame = window.MangoGame || {};
 
             // 플레이어 이동
             const maxX = Math.max(8, this.screenEl.clientWidth - 54);
-            const speed = 235;
+            const buff = this.getActiveBuff() || {};
+            const speed = 235 * (buff.catchSpeedMult || 1);
             if (this.moveLeft) {
                 this.playerX = Math.max(4, this.playerX - speed * dt);
                 this.mangoEl.style.transform = 'scaleX(-1)';
@@ -276,7 +285,8 @@ window.MangoGame = window.MangoGame || {};
             }
 
             const meta = it.meta || this.getCharacterItems().tier3;
-            const pts = Math.round(meta.points * mult);
+            const buff = this.getActiveBuff() || {};
+            const pts = Math.round(meta.points * mult * (buff.minigameSnackScoreMult || 1));
             this.score += pts;
             this.onStatGain({ happy: meta.happy, exp: meta.exp });
             if (ns.Sound) {
@@ -300,7 +310,7 @@ window.MangoGame = window.MangoGame || {};
             const currentPhase = phase || this.getPhase();
             this.scoreEl.textContent = `SCORE ${String(this.score).padStart(4, '0')}`;
             this.timeEl.textContent = `${Math.ceil(this.timeLeft)}s`;
-            this.heartsEl.textContent = '❤️'.repeat(this.hearts) + '🖤'.repeat(ns.MINIGAME_CONFIG.maxHearts - this.hearts);
+            this.heartsEl.textContent = '❤️'.repeat(this.hearts) + '🖤'.repeat(Math.max(0, this.maxHearts - this.hearts));
 
             const parts = [];
             if (currentPhase.isFever) parts.push('🔥FEVER x1.5');
@@ -315,7 +325,7 @@ window.MangoGame = window.MangoGame || {};
                 if (survivedAll) ns.Sound.playGameClear();
                 else ns.Sound.playGameOver();
             }
-            const perfectClear = survivedAll && this.hearts === ns.MINIGAME_CONFIG.maxHearts;
+            const perfectClear = survivedAll && this.hearts === this.maxHearts;
             const baseCoins = Math.floor(this.score / 10);
             const clearBonus = perfectClear
                 ? ns.MINIGAME_CONFIG.perfectBonusCoins
@@ -332,6 +342,9 @@ window.MangoGame = window.MangoGame || {};
 
             this.resultTitleEl.textContent = reasonTitle;
             const badgeHtml = summary.isNewRecord ? '<div class="result-badge">🏆 NEW RECORD!</div>' : '';
+            const skinBonusRow = summary.skinCoinBonus > 0
+                ? `<div class="result-row"><span>스킨 코인 보너스</span><span>+${summary.skinCoinBonus} 🪙</span></div>`
+                : '';
             this.resultDetailsEl.innerHTML = `
                 ${badgeHtml}
                 <div class="result-row"><span>최종 점수</span><span>${summary.score} pts</span></div>
@@ -339,6 +352,7 @@ window.MangoGame = window.MangoGame || {};
                 <div class="result-row"><span>황금 코인</span><span>+${summary.goldCoins} 🪙</span></div>
                 <div class="result-row"><span>완주 보너스</span><span>+${summary.clearBonus} 🪙</span></div>
                 <div class="result-row"><span>신기록 보너스</span><span>+${summary.recordBonus} 🪙</span></div>
+                ${skinBonusRow}
                 <div class="result-row highlight"><span>총 획득 코인</span><span>+${summary.totalCoins} 🪙</span></div>
             `;
             this.resultEl.style.display = 'flex';
@@ -358,6 +372,7 @@ window.MangoGame = window.MangoGame || {};
             this.resultTitleEl = options.resultTitleEl;
             this.resultDetailsEl = options.resultDetailsEl;
             this.getCharacterId = options.getCharacterId || (() => 'mango');
+            this.getActiveBuff = options.getActiveBuff || (() => ({}));
             this.onStatGain = options.onStatGain;
             this.onComplete = options.onComplete;
 
@@ -366,7 +381,8 @@ window.MangoGame = window.MangoGame || {};
             this.score = 0;
             this.bonusCoins = 0;
             this.timeLeft = ns.MINIGAME_CONFIG.durationSeconds;
-            this.hearts = ns.MINIGAME_CONFIG.maxHearts;
+            this.maxHearts = this.getMaxHearts();
+            this.hearts = this.maxHearts;
             this.combo = 0;
             this.invincibleUntil = 0;
 
@@ -385,6 +401,11 @@ window.MangoGame = window.MangoGame || {};
             return table[charId] || table.mango;
         }
 
+        getMaxHearts() {
+            const buff = this.getActiveBuff() || {};
+            return ns.MINIGAME_CONFIG.maxHearts + (buff.extraHearts || 0);
+        }
+
         reset() {
             this.stopLoop();
             this.running = false;
@@ -392,7 +413,8 @@ window.MangoGame = window.MangoGame || {};
             this.score = 0;
             this.bonusCoins = 0;
             this.timeLeft = ns.MINIGAME_CONFIG.durationSeconds;
-            this.hearts = ns.MINIGAME_CONFIG.maxHearts;
+            this.maxHearts = this.getMaxHearts();
+            this.hearts = this.maxHearts;
             this.combo = 0;
             this.invincibleUntil = 0;
             this.playerY = 0;
@@ -410,7 +432,7 @@ window.MangoGame = window.MangoGame || {};
             this.guideEl.innerHTML = `
                 JUMP RUN! (2단 점프)<br>
                 ${items.tier1.emoji} +${items.tier1.points} · ${items.tier2.emoji} +${items.tier2.points} · ${items.tier3.emoji} +${items.tier3.points}<br>
-                울타리를 뛰어넘으세요!<br><br>
+                울타리를 뛰어넘으세요! ${'❤️'.repeat(this.maxHearts)}<br><br>
                 TAP [JUMP] OR [PLAY / STOP]<br>TO START
             `;
             this.guideEl.style.display = 'block';
@@ -654,7 +676,9 @@ window.MangoGame = window.MangoGame || {};
             }
 
             this.combo += 1;
-            const mult = phase.scoreMult * this.getComboMultiplier();
+            const buff = this.getActiveBuff() || {};
+            const comboMult = this.getComboMultiplier() * (this.combo >= 4 ? (buff.jumpComboBonusMult || 1) : 1);
+            const mult = phase.scoreMult * comboMult;
 
             if (ent.kind === 'gold') {
                 const pts = Math.round(30 * mult);
@@ -666,7 +690,7 @@ window.MangoGame = window.MangoGame || {};
             }
 
             const meta = ent.meta || this.getCharacterItems().tier3;
-            const pts = Math.round(meta.points * mult);
+            const pts = Math.round(meta.points * mult * (buff.minigameSnackScoreMult || 1));
             this.score += pts;
             this.onStatGain({ happy: meta.happy, exp: meta.exp });
             if (ns.Sound) {
@@ -690,7 +714,7 @@ window.MangoGame = window.MangoGame || {};
             const currentPhase = phase || this.getPhase();
             this.scoreEl.textContent = `SCORE ${String(this.score).padStart(4, '0')}`;
             this.timeEl.textContent = `${Math.ceil(this.timeLeft)}s`;
-            this.heartsEl.textContent = '❤️'.repeat(this.hearts) + '🖤'.repeat(ns.MINIGAME_CONFIG.maxHearts - this.hearts);
+            this.heartsEl.textContent = '❤️'.repeat(this.hearts) + '🖤'.repeat(Math.max(0, this.maxHearts - this.hearts));
 
             const parts = [];
             if (currentPhase.isFever) parts.push('🔥FEVER x1.5');
@@ -705,7 +729,7 @@ window.MangoGame = window.MangoGame || {};
                 if (survivedAll) ns.Sound.playGameClear();
                 else ns.Sound.playGameOver();
             }
-            const perfectClear = survivedAll && this.hearts === ns.MINIGAME_CONFIG.maxHearts;
+            const perfectClear = survivedAll && this.hearts === this.maxHearts;
             const baseCoins = Math.floor(this.score / 10);
             const clearBonus = perfectClear
                 ? ns.MINIGAME_CONFIG.perfectBonusCoins
@@ -722,6 +746,9 @@ window.MangoGame = window.MangoGame || {};
 
             this.resultTitleEl.textContent = reasonTitle;
             const badgeHtml = summary.isNewRecord ? '<div class="result-badge">🏆 NEW RECORD!</div>' : '';
+            const skinBonusRow = summary.skinCoinBonus > 0
+                ? `<div class="result-row"><span>스킨 코인 보너스</span><span>+${summary.skinCoinBonus} 🪙</span></div>`
+                : '';
             this.resultDetailsEl.innerHTML = `
                 ${badgeHtml}
                 <div class="result-row"><span>최종 점수</span><span>${summary.score} pts</span></div>
@@ -729,6 +756,7 @@ window.MangoGame = window.MangoGame || {};
                 <div class="result-row"><span>황금 코인</span><span>+${summary.goldCoins} 🪙</span></div>
                 <div class="result-row"><span>완주 보너스</span><span>+${summary.clearBonus} 🪙</span></div>
                 <div class="result-row"><span>신기록 보너스</span><span>+${summary.recordBonus} 🪙</span></div>
+                ${skinBonusRow}
                 <div class="result-row highlight"><span>총 획득 코인</span><span>+${summary.totalCoins} 🪙</span></div>
             `;
             this.resultEl.style.display = 'flex';
