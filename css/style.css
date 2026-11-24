@@ -370,20 +370,20 @@ html, body {
 .bar-happy { background-color: #f6cf78; }
 .bar-fatigue { background-color: #94cde8; }
 
-/* 우측 세로 퀵 독 (캐릭터 / 도감 / 랭킹) */
+/* 우측 세로 퀵 독 (캐릭터 / 도감 / 랭킹 / 저장) */
 .quick-dock {
     position: absolute;
     right: 8px;
-    top: 104px;
+    top: 98px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
     z-index: 4;
 }
 
 .dock-btn {
     width: 46px;
-    min-height: 40px;
+    min-height: 36px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -392,7 +392,7 @@ html, body {
     background: rgba(255, 252, 248, 0.94);
     border: 1.5px solid #6b5244;
     border-radius: 8px;
-    padding: 4px 2px;
+    padding: 3px 2px;
     font-family: inherit;
     color: #5a463a;
     cursor: pointer;
@@ -401,6 +401,14 @@ html, body {
 
 .dock-btn.dock-pet {
     background: #fff1d0;
+}
+
+.dock-btn.dock-save {
+    background: #e6f4fc;
+}
+
+.dock-btn.dock-save.saved {
+    background: #d5eedd;
 }
 
 .dock-btn:active {
@@ -1048,6 +1056,37 @@ html, body {
     width: 100%;
 }
 
+.char-growth-pill {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #5a463a;
+    background: #fff5dc;
+    border: 1px solid #c9b5a6;
+    border-radius: 5px;
+    padding: 2px 5px;
+    line-height: 1.25;
+}
+
+.fav-snack-card {
+    background: #fff7e8;
+    border-color: #c98664;
+}
+
+.fav-snack-tag {
+    display: inline-block;
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    color: #b5455d;
+    background: #ffe3ec;
+    border: 1px solid #e6a3b5;
+    border-radius: 4px;
+    padding: 1px 4px;
+    vertical-align: middle;
+    margin-left: 2px;
+}
+
 .char-card .item-desc {
     font-size: 9px;
     line-height: 1.3;
@@ -1248,4 +1287,144 @@ html, body {
     flex: none;
     font-size: 11px;
     letter-spacing: 0.5px;
+}
+
+/* 온보딩 하단 불러오기 버튼 */
+.onboarding-footer {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1.5px dashed #d6c8bc;
+}
+
+.onboarding-footer .mini-action-btn {
+    width: 100%;
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 8px;
+}
+
+/* 닉네임 기반 저장/불러오기 모달 */
+#save-modal .save-body {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, sans-serif;
+}
+
+.save-summary {
+    background: #fff5dc;
+    border: 1.5px solid #6b5244;
+    border-radius: 7px;
+    padding: 7px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #5a463a;
+    line-height: 1.45;
+}
+
+.save-quick-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    background: #e7f6ec;
+    border: 1.5px solid #6b5244;
+    border-radius: 7px;
+    padding: 7px 9px;
+}
+
+.save-quick-info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.save-quick-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: #366647;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.save-quick-meta {
+    font-size: 9.5px;
+    color: #5f7a68;
+}
+
+.save-quick-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.save-unlink-btn {
+    background: #fffcf8;
+    color: #7d6759;
+    border: 1.5px solid #6b5244;
+    border-radius: 6px;
+    padding: 6px 7px;
+    font-family: inherit;
+    font-size: 9.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.save-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.save-field {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.save-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #5a463a;
+}
+
+#save-modal .nickname-input {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, sans-serif;
+    font-size: 12px;
+    padding: 8px 9px;
+}
+
+.save-note {
+    font-size: 10px;
+    color: #7d6759;
+    background: #f5eee6;
+    border: 1px solid #d6c8bc;
+    border-radius: 6px;
+    padding: 6px 8px;
+    line-height: 1.4;
+}
+
+.save-msg {
+    font-size: 10.5px;
+    font-weight: 700;
+    min-height: 15px;
+    color: #d65a5a;
+    line-height: 1.4;
+}
+
+.save-msg.ok {
+    color: #2e7d4b;
+}
+
+#save-submit-btn {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 10px;
 }

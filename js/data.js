@@ -10,6 +10,14 @@ window.MangoGame.CHARACTERS = [
         sizeScale: 0.94
     },
     {
+        id: 'yulmu',
+        name: '율무',
+        title: 'GROW UP YULMU',
+        breed: '3.7~4kg 비숑',
+        desc: '동글동글 솜사탕 머리에 해맑게 웃는 4kg 하얀 비숑',
+        sizeScale: 1.0
+    },
+    {
         id: 'mango',
         name: '망고',
         title: 'GROW UP MANGO',
@@ -26,6 +34,24 @@ window.MangoGame.CHARACTERS = [
         sizeScale: 1.16
     }
 ];
+
+window.MangoGame.DEFAULT_PET_STATE = {
+    level: 1,
+    exp: 0,
+    hunger: 70,
+    happy: 70,
+    fatigue: 20,
+    isSleeping: false,
+    equippedAccessory: null,
+    careStats: {
+        feed: 0,
+        play: 0,
+        sleep: 0
+    },
+    adultForm: null,
+    unlockedDex: ['baby'],
+    lastActiveAt: Date.now()
+};
 
 window.MangoGame.DEFAULT_STATE = {
     character: 'mango',
@@ -47,6 +73,7 @@ window.MangoGame.DEFAULT_STATE = {
     },
     adultForm: null,
     unlockedDex: ['baby'],
+    pets: null,
     inventory: {
         milk: 1
     },
@@ -179,26 +206,75 @@ window.MangoGame.MINIGAME_ITEMS = {
         tier1: { emoji: '💖', label: '하트', points: 30, happy: 4, exp: 12, speedBonus: 18, style: 'gold' },
         tier2: { emoji: '🥐', label: '빵', points: 20, happy: 3, exp: 8, speedBonus: 10, style: 'gold' },
         tier3: { emoji: '🛏️', label: '베개', points: 10, happy: 1, exp: 4, speedBonus: 0, style: '' }
+    },
+    yulmu: {
+        tier1: { emoji: '🍖', label: '음식', points: 30, happy: 4, exp: 12, speedBonus: 18, style: 'gold' },
+        tier2: { emoji: '🐾', label: '산책', points: 20, happy: 3, exp: 8, speedBonus: 10, style: 'gold' },
+        tier3: { emoji: '💛', label: '노란 하트', points: 10, happy: 1, exp: 4, speedBonus: 0, style: '' }
     }
 };
 
 window.MangoGame.SHOP_ITEMS = [
-    // 간식 (소모품)
+    // 간식 (소모품 — 캐릭터별 최애 효과 차등 적용)
     {
         id: 'milk',
         category: 'snack',
         name: '🥛 우유',
         price: 25,
-        desc: '배고픔 +35, 경험치 +25',
-        effect: { hunger: 35, happy: 5, fatigue: 0, exp: 25 }
+        desc: '배고픔 +35, 행복 +5, 경험치 +25',
+        effect: { hunger: 35, happy: 5, fatigue: 0, exp: 25 },
+        charEffects: {
+            mimi: { hunger: 35, happy: 15, fatigue: -12, exp: 32, bubble: '따뜻한 우유에 포근! 🥛' },
+            yulmu: { hunger: 45, happy: 8, fatigue: 0, exp: 35, bubble: '율무가 우유를 꿀꺽! 🥛' }
+        }
+    },
+    {
+        id: 'croissant',
+        category: 'snack',
+        name: '🥐 버터 크루아상',
+        price: 35,
+        desc: '배고픔 +40, 행복 +15, 경험치 +30',
+        effect: { hunger: 40, happy: 15, fatigue: 0, exp: 30 },
+        charEffects: {
+            mango: { hunger: 45, happy: 30, fatigue: 0, exp: 45, bubble: '망고 최애 빵! 꼬리 흔들~ 🥐' },
+            mimi: { hunger: 50, happy: 22, fatigue: -10, exp: 38, bubble: '미미 취향! 바삭한 빵 최고! 🥐' }
+        }
+    },
+    {
+        id: 'egg_tart',
+        category: 'snack',
+        name: '🍳 반숙 계란 간식',
+        price: 40,
+        desc: '배고픔 +45, 행복 +12, 피로 -8, 경험치 +32',
+        effect: { hunger: 45, happy: 12, fatigue: -8, exp: 32 },
+        charEffects: {
+            tori: { hunger: 60, happy: 28, fatigue: -12, exp: 48, bubble: '토리 취향 저격! 계란 최고! 🍳' },
+            yulmu: { hunger: 55, happy: 18, fatigue: -8, exp: 42, bubble: '율무가 눈 반짝이며 흡입! 🍳' }
+        }
     },
     {
         id: 'energy_drink',
         category: 'snack',
         name: '⚡ 에너지 드링크',
         price: 45,
-        desc: '피로도 -40 (미니게임 연속용)',
-        effect: { hunger: 0, happy: 5, fatigue: -40, exp: 10 }
+        desc: '피로 -40, 행복 +5, 경험치 +10',
+        effect: { hunger: 0, happy: 5, fatigue: -40, exp: 10 },
+        charEffects: {
+            yulmu: { hunger: 0, happy: 15, fatigue: -55, exp: 20, bubble: '산책 갈 준비 완료! ⚡' },
+            tori: { hunger: 0, happy: 10, fatigue: -50, exp: 18, bubble: '작은 토리 에너지 풀충전! ⚡' }
+        }
+    },
+    {
+        id: 'mango_cup',
+        category: 'snack',
+        name: '🥭 달콤 망고컵',
+        price: 50,
+        desc: '배고픔 +35, 행복 +25, 피로 -15, 경험치 +35',
+        effect: { hunger: 35, happy: 25, fatigue: -15, exp: 35 },
+        charEffects: {
+            mango: { hunger: 45, happy: 40, fatigue: -15, exp: 50, bubble: '망고가 망고를 먹고 대만족! 🥭' },
+            mimi: { hunger: 35, happy: 35, fatigue: -30, exp: 45, bubble: '달콤한 휴식! 피로 사르르~ 🥭' }
+        }
     },
     {
         id: 'steak',
@@ -206,7 +282,11 @@ window.MangoGame.SHOP_ITEMS = [
         name: '🥩 특제 스테이크',
         price: 60,
         desc: '배고픔 +70, 행복 +15, 경험치 +50',
-        effect: { hunger: 70, happy: 15, fatigue: 0, exp: 50 }
+        effect: { hunger: 70, happy: 15, fatigue: 0, exp: 50 },
+        charEffects: {
+            tori: { hunger: 85, happy: 35, fatigue: 0, exp: 70, bubble: '토리 최애 고기! 행복 MAX! 🥩' },
+            yulmu: { hunger: 85, happy: 28, fatigue: 0, exp: 65, bubble: '율무 폭풍 먹방! 최애 음식! 🥩' }
+        }
     },
 
     // 액세서리 (영구 보유)

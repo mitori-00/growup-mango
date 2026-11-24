@@ -268,8 +268,124 @@ window.MangoGame = window.MangoGame || {};
         `;
     }
 
+    function buildYulmuBody() {
+        return `
+            <!-- Feathery Bichon White Tail -->
+            <rect x="1" y="10" width="5" height="5" fill="#ffffff" class="fur-part"/>
+            <rect x="2" y="12" width="3" height="2" fill="#eef0f7"/>
+            <rect x="0" y="11" width="1" height="3" fill="#222222"/>
+            <rect x="1" y="9" width="4" height="1" fill="#222222"/>
+            <rect x="1" y="15" width="4" height="1" fill="#222222"/>
+            <rect x="5" y="10" width="1" height="2" fill="#222222"/>
+
+            <!-- Soft Fluffy 4kg Bichon Body -->
+            <rect x="5" y="12" width="12" height="6" fill="#ffffff" class="fur-part"/>
+            <rect x="6" y="16" width="10" height="2" fill="#f0f1f8"/>
+            <rect x="6" y="11" width="5" height="1" fill="#222222"/>
+            <rect x="17" y="13" width="1" height="5" fill="#222222"/>
+            <rect x="8" y="19" width="5" height="1" fill="#222222"/>
+
+            <!-- Fluffy Column Bichon Legs -->
+            <rect x="5" y="17" width="3" height="4" fill="#ffffff" class="fur-part"/>
+            <rect x="4" y="15" width="1" height="6" fill="#222222"/>
+            <rect x="8" y="18" width="1" height="3" fill="#222222"/>
+            <rect x="5" y="21" width="3" height="1" fill="#222222"/>
+
+            <rect x="13" y="17" width="3" height="4" fill="#ffffff" class="fur-part"/>
+            <rect x="12" y="18" width="1" height="3" fill="#222222"/>
+            <rect x="16" y="17" width="1" height="4" fill="#222222"/>
+            <rect x="13" y="21" width="3" height="1" fill="#222222"/>
+
+            <!-- Signature Pink Collar Point -->
+            <rect x="11" y="13" width="6" height="1" fill="#e85a8b"/>
+            <rect x="13" y="14" width="2" height="1" fill="#ff85ad"/>
+
+            <!-- Bichon Round Cotton-Candy Helmet Head -->
+            <rect x="10" y="3" width="10" height="3" fill="#ffffff" class="fur-light"/>
+            <rect x="12" y="2" width="6" height="2" fill="#ffffff" class="fur-light"/>
+            <rect x="12" y="1" width="6" height="1" fill="#222222"/>
+            <rect x="10" y="2" width="2" height="1" fill="#222222"/>
+            <rect x="18" y="2" width="2" height="1" fill="#222222"/>
+            <rect x="9" y="3" width="1" height="2" fill="#222222"/>
+            <rect x="20" y="3" width="1" height="2" fill="#222222"/>
+
+            <rect x="9" y="5" width="12" height="8" fill="#ffffff" class="fur-light"/>
+            <rect x="11" y="12" width="8" height="2" fill="#ffffff"/>
+            <rect x="21" y="6" width="1" height="6" fill="#222222"/>
+            <rect x="20" y="12" width="1" height="1" fill="#222222"/>
+
+            <!-- Soft Fluffy Flared Bichon Ears Blending Into Helmet -->
+            <rect x="7" y="5" width="3" height="6" fill="#ffffff"/>
+            <rect x="8" y="8" width="2" height="3" fill="#eceef6"/>
+            <rect x="7" y="4" width="2" height="1" fill="#222222"/>
+            <rect x="6" y="5" width="1" height="5" fill="#222222"/>
+            <rect x="7" y="10" width="1" height="2" fill="#222222"/>
+            <rect x="8" y="11" width="2" height="1" fill="#222222"/>
+            <rect x="10" y="8" width="1" height="2" fill="#b8bccb"/>
+
+            <rect x="21" y="6" width="2" height="4" fill="#ffffff"/>
+            <rect x="21" y="5" width="1" height="1" fill="#222222"/>
+            <rect x="23" y="6" width="1" height="3" fill="#222222"/>
+            <rect x="22" y="9" width="1" height="1" fill="#222222"/>
+
+            <!-- Bright Round Eyes, Warm Brown Nose & Happy Pink Tongue -->
+            <rect x="13" y="7" width="2" height="2" fill="#1a1a1a"/>
+            <rect x="13" y="7" width="1" height="1" fill="#ffffff"/>
+            <rect x="18" y="7" width="2" height="2" fill="#1a1a1a"/>
+            <rect x="18" y="7" width="1" height="1" fill="#ffffff"/>
+            <rect x="16" y="9" width="2" height="1" fill="#5c3b2e"/>
+            <rect x="11" y="9" width="2" height="1" fill="#ffb0c0"/>
+            <rect x="15" y="10" width="4" height="1" fill="#222222"/>
+            <rect x="16" y="11" width="2" height="1" fill="#ff6b81"/>
+        `;
+    }
+
+    function buildYulmuSleepingBody() {
+        return `
+            <!-- Cozy Curled Bichon Tail -->
+            <rect x="2" y="15" width="4" height="5" fill="#ffffff" class="fur-part"/>
+            <rect x="3" y="17" width="2" height="2" fill="#eef0f7"/>
+            <rect x="1" y="16" width="1" height="3" fill="#222222"/>
+            <rect x="2" y="14" width="3" height="1" fill="#222222"/>
+            <rect x="2" y="20" width="4" height="1" fill="#222222"/>
+
+            <!-- Curled Fluffy Bichon Body -->
+            <rect x="5" y="13" width="11" height="8" fill="#ffffff" class="fur-part"/>
+            <rect x="6" y="19" width="9" height="2" fill="#f0f1f8"/>
+            <rect x="6" y="12" width="6" height="1" fill="#222222"/>
+            <rect x="4" y="13" width="1" height="7" fill="#222222"/>
+            <rect x="5" y="21" width="16" height="1" fill="#222222"/>
+
+            <!-- Tucked Paws & Pink Collar Peek -->
+            <rect x="17" y="19" width="4" height="2" fill="#ffffff"/>
+            <rect x="21" y="19" width="1" height="2" fill="#222222"/>
+            <rect x="11" y="18" width="5" height="1" fill="#e85a8b"/>
+
+            <!-- Round Cotton-Candy Sleeping Head -->
+            <rect x="12" y="9" width="6" height="2" fill="#ffffff"/>
+            <rect x="12" y="8" width="6" height="1" fill="#222222"/>
+            <rect x="10" y="10" width="10" height="8" fill="#ffffff" class="fur-light"/>
+            <rect x="10" y="9" width="2" height="1" fill="#222222"/>
+            <rect x="18" y="9" width="2" height="1" fill="#222222"/>
+            <rect x="20" y="11" width="1" height="8" fill="#222222"/>
+
+            <!-- Fluffy Bichon Ears -->
+            <rect x="8" y="12" width="3" height="5" fill="#ffffff"/>
+            <rect x="9" y="14" width="2" height="3" fill="#eceef6"/>
+            <rect x="8" y="11" width="2" height="1" fill="#222222"/>
+            <rect x="7" y="12" width="1" height="4" fill="#222222"/>
+            <rect x="8" y="16" width="2" height="1" fill="#222222"/>
+
+            <!-- Closed Sleeping Eyes, Warm Brown Nose & Blush -->
+            <rect x="13" y="14" width="2" height="1" fill="#222222"/>
+            <rect x="17" y="14" width="2" height="1" fill="#222222"/>
+            <rect x="11" y="15" width="2" height="1" fill="#ffb0c0"/>
+            <rect x="16" y="16" width="2" height="1" fill="#5c3b2e"/>
+        `;
+    }
+
     function buildEvolutionOverlays(charId) {
-        if (charId === 'tori' || charId === 'mimi') {
+        if (charId === 'tori' || charId === 'mimi' || charId === 'yulmu') {
             return `
             <!-- Tori Evolution: Foodie (하트 포인트 빨간 턱받이 + 빵빵한 볼 + 혀) -->
             <g class="evo-layer evo-adult_foodie" style="display:none;">
@@ -972,22 +1088,27 @@ window.MangoGame = window.MangoGame || {};
             if (!svgEl) return;
             const isTori = charId === 'tori';
             const isMimi = charId === 'mimi';
+            const isYulmu = charId === 'yulmu';
             const isSleeping = Boolean(options.isSleeping);
             svgEl.classList.toggle('char-tori', isTori);
             svgEl.classList.toggle('char-mimi', isMimi);
-            svgEl.classList.toggle('char-mango', !isTori && !isMimi);
+            svgEl.classList.toggle('char-yulmu', isYulmu);
+            svgEl.classList.toggle('char-mango', !isTori && !isMimi && !isYulmu);
             svgEl.setAttribute('viewBox', '0 -3 24 26');
 
             if (isSleeping) {
-                svgEl.innerHTML = isTori
-                    ? buildToriSleepingBody()
-                    : (isMimi ? buildMimiSleepingBody() : buildMangoSleepingBody());
+                if (isTori) svgEl.innerHTML = buildToriSleepingBody();
+                else if (isMimi) svgEl.innerHTML = buildMimiSleepingBody();
+                else if (isYulmu) svgEl.innerHTML = buildYulmuSleepingBody();
+                else svgEl.innerHTML = buildMangoSleepingBody();
                 return;
             }
 
-            const body = isTori
-                ? buildToriBody()
-                : (isMimi ? buildMimiBody() : buildMangoBody());
+            let body;
+            if (isTori) body = buildToriBody();
+            else if (isMimi) body = buildMimiBody();
+            else if (isYulmu) body = buildYulmuBody();
+            else body = buildMangoBody();
             const includeOverlays = options.withOverlays !== false;
             const overlays = includeOverlays ? buildOverlays(Boolean(options.withBasket), charId) : '';
             svgEl.innerHTML = body + overlays;
