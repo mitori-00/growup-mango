@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Grow Up ?</title>
-    <link rel="stylesheet" href="css/style.css?v=20261124f">
+    <link rel="stylesheet" href="css/style.css?v=20261124g">
 </head>
 <body>
 
 <div class="device">
     <div class="device-header">
         <div class="bezel-slot bezel-left">
+            <button type="button" class="bezel-save-btn" id="save-btn" title="닉네임으로 저장/불러오기"><span>💾</span><span>SAVE</span></button>
             <button type="button" class="bezel-btn" id="btn-go-home" title="홈으로 돌아가기" style="display:none;">🏠</button>
         </div>
         <div class="title" id="device-title">GROW UP MANGO</div>
@@ -64,9 +65,9 @@
                 <span class="dock-icon">🏆</span>
                 <span class="dock-label" id="home-best-score">0</span>
             </button>
-            <button type="button" class="dock-btn dock-save" id="save-btn" title="닉네임으로 저장/불러오기">
+            <button type="button" class="dock-btn dock-quicksave" id="quick-dock-save-btn" title="연동된 계정으로 즉시 중간 저장" style="display:none;">
                 <span class="dock-icon">💾</span>
-                <span class="dock-label">저장</span>
+                <span class="dock-label">중간저장</span>
             </button>
         </div>
 
@@ -337,12 +338,12 @@
 </div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="js/data.js?v=20261124f"></script>
-<script defer src="js/sprites.js?v=20261124f"></script>
-<script defer src="js/sound.js?v=20261124f"></script>
-<script defer src="js/supabase-config.js?v=20261124f"></script>
-<script defer src="js/storage.js?v=20261124f"></script>
-<script defer src="js/minigame.js?v=20261124f"></script>
-<script defer src="js/app.js?v=20261124f"></script>
+<script defer src="js/data.js?v=20261124g"></script>
+<script defer src="js/sprites.js?v=20261124g"></script>
+<script defer src="js/sound.js?v=20261124g"></script>
+<script defer src="js/supabase-config.js?v=20261124g"></script>
+<script defer src="js/storage.js?v=20261124g"></script>
+<script defer src="js/minigame.js?v=20261124g"></script>
+<script defer src="js/app.js?v=20261124g"></script>
 </body>
 </html>

@@ -53,6 +53,7 @@ window.MangoGame = window.MangoGame || {};
     const syncBadge = document.getElementById('sync-badge');
     const nicknameInput = document.getElementById('nickname-input');
     const saveBtn = document.getElementById('save-btn');
+    const quickDockSaveBtn = document.getElementById('quick-dock-save-btn');
     const saveModal = document.getElementById('save-modal');
     const saveStatusBadge = document.getElementById('save-status-badge');
     const saveSummary = document.getElementById('save-summary');
@@ -353,10 +354,18 @@ window.MangoGame = window.MangoGame || {};
     }
 
     function updateSaveBtnUI() {
-        if (!saveBtn) return;
         const profile = ns.StorageService.getLinkedProfile();
-        saveBtn.classList.toggle('saved', Boolean(profile));
-        saveBtn.title = profile ? `저장 연동됨 (${profile.nickname})` : '닉네임으로 저장/불러오기';
+        const hasLinkedDb = Boolean(profile && ns.StorageService.isCloudConfigured());
+        if (saveBtn) {
+            saveBtn.classList.toggle('saved', hasLinkedDb);
+            saveBtn.title = hasLinkedDb ? `저장 연동됨 (${profile.nickname})` : '닉네임으로 저장/불러오기';
+        }
+        if (quickDockSaveBtn) {
+            quickDockSaveBtn.style.display = hasLinkedDb ? 'flex' : 'none';
+            if (hasLinkedDb) {
+                quickDockSaveBtn.title = `${profile.nickname}님 기록 즉시 중간 저장`;
+            }
+        }
     }
 
     function setSaveMode(mode) {
@@ -1032,6 +1041,7 @@ window.MangoGame = window.MangoGame || {};
         jumpBtns.style.display = 'none';
         gameScreen.style.display = 'flex';
         gameBtns.style.display = 'flex';
+        if (saveBtn) saveBtn.style.display = 'none';
         if (btnGoHome) btnGoHome.style.display = 'inline-flex';
         isHome = false;
         minigame.reset();
@@ -1046,6 +1056,7 @@ window.MangoGame = window.MangoGame || {};
         gameBtns.style.display = 'none';
         jumpScreen.style.display = 'flex';
         jumpBtns.style.display = 'flex';
+        if (saveBtn) saveBtn.style.display = 'none';
         if (btnGoHome) btnGoHome.style.display = 'inline-flex';
         isHome = false;
         jumpGame.reset();
@@ -1061,6 +1072,7 @@ window.MangoGame = window.MangoGame || {};
         homeScreen.style.display = 'flex';
         homeBtns.style.display = 'flex';
         if (btnGoHome) btnGoHome.style.display = 'none';
+        if (saveBtn) saveBtn.style.display = 'inline-flex';
         isHome = true;
         updateUI();
     }
@@ -1161,6 +1173,23 @@ window.MangoGame = window.MangoGame || {};
     document.getElementById('dex-btn').addEventListener('click', withClickSound(openDexModal));
     document.getElementById('rank-btn').addEventListener('click', withClickSound(openRankModal));
     if (saveBtn) saveBtn.addEventListener('click', withClickSound(() => openSaveModal('save')));
+    if (quickDockSaveBtn) {
+        quickDockSaveBtn.addEventListener('click', withClickSound(async () => {
+            quickDockSaveBtn.disabled = true;
+            showBubble('중간 저장 중... 💾');
+            const res = await ns.StorageService.quickSaveLinkedProfile(state);
+            quickDockSaveBtn.disabled = false;
+            if (!res.ok) {
+                showBubble(res.error || '저장 실패');
+                return;
+            }
+            state = res.state;
+            updateUI();
+            updateSaveBtnUI();
+            if (ns.Sound) ns.Sound.playLevelUp();
+            showBubble(`${res.nickname} 중간 저장 완료! 💾`);
+        }));
+    }
     document.getElementById('coin-shop-btn').addEventListener('click', withClickSound(openShopModal));
     document.getElementById('close-food-btn').addEventListener('click', withClickSound(() => { foodModal.style.display = 'none'; }));
     document.getElementById('close-shop-btn').addEventListener('click', withClickSound(() => { shopModal.style.display = 'none'; }));

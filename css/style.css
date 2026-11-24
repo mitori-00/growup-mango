@@ -45,7 +45,7 @@ html, body {
 }
 
 .bezel-slot {
-    width: 34px;
+    width: 66px;
     display: flex;
     align-items: center;
     flex-shrink: 0;
@@ -73,6 +73,34 @@ html, body {
 .bezel-btn:active {
     transform: translateY(1px);
     box-shadow: 0 1px 0 #6b5244;
+}
+
+.bezel-save-btn {
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 0 8px;
+    background: #a3ebd0;
+    border: 1.5px solid #3c6e58;
+    border-radius: 15px;
+    font-family: inherit;
+    font-size: 7.5px;
+    font-weight: bold;
+    color: #2b4d3e;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #3c6e58;
+    white-space: nowrap;
+}
+
+.bezel-save-btn.saved {
+    background: #8ee5c2;
+}
+
+.bezel-save-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 #3c6e58;
 }
 
 .title {
@@ -403,12 +431,16 @@ html, body {
     background: #fff1d0;
 }
 
-.dock-btn.dock-save {
-    background: #e6f4fc;
+.dock-btn.dock-quicksave {
+    background: #9ce8c7;
+    border: 2px solid #3c6e58;
+    color: #254738;
+    box-shadow: 0 2px 0 #3c6e58, 0 0 0 2px rgba(156, 232, 199, 0.45);
 }
 
-.dock-btn.dock-save.saved {
-    background: #d5eedd;
+.dock-btn.dock-quicksave:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 #3c6e58;
 }
 
 .dock-btn:active {
